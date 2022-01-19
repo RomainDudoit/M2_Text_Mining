@@ -2,18 +2,19 @@ rm(list = ls(all = TRUE))
 
 
 clean_dataframe <- function(df){
-  df = apply(df,2, function(x) gsub("Ã©", "é",x))
-  df = apply(df,2, function(x) gsub("Ã¨", "è",x))
-  df = apply(df,2, function(x) gsub("Ã¯ ", "ï",x))
-  df = apply(df,2, function(x) gsub("Ã´", "ô",x))
-  df = apply(df,2, function(x) gsub("Ã§", "ç",x))
-  df = apply(df,2, function(x) gsub("Ãª", "ê",x))
-  df = apply(df,2, function(x) gsub("Ã¹", "ù",x))
-  df = apply(df,2, function(x) gsub("Ã¹", "ù",x))
-  df = apply(df,2, function(x) gsub("Ã‰", "É",x))
-  df = apply(df,2, function(x) gsub("Ãˆ", "È",x))
-  df = apply(df,2, function(x) gsub("Ã€", "À",x))
-  df = apply(df,2, function(x) gsub("Ã", "à",x))
+  df = apply(df,2, function(x) gsub("Ã©", "é",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã¨", "è",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã¯ ", "ï",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã´", "ô",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã§", "ç",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ãª", "ê",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã¹", "ù",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã¹", "ù",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã‰", "É",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ãˆ", "È",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã€", "À",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã", "à",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("[\r\n]", "", x)) # suppression des retours à la ligne
 
   return (df)
 }
