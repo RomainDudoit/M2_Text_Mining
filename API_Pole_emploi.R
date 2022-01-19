@@ -13,16 +13,26 @@ clean_dataframe <- function(df){
   df = apply(df,2, function(x) gsub("Ã‰", "É",x)) #iso 8859-1 to utf8
   df = apply(df,2, function(x) gsub("Ãˆ", "È",x)) #iso 8859-1 to utf8
   df = apply(df,2, function(x) gsub("Ã€", "À",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã¦ ", "æ",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Ã¢ ", "â",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Å“", "œ",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("Å“", "œ",x)) #iso 8859-1 to utf8
   df = apply(df,2, function(x) gsub("Ã", "à",x)) #iso 8859-1 to utf8
-  df = apply(df,2, function(x) gsub("[\r\n]", "", x)) # suppression des retours à la ligne
-
+  df = apply(df,2, function(x) gsub("Â", " ",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("à®", "î",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("à»", "û",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("[\r\n]", " ", x)) # suppression des retours à la ligne
+  df = apply(df,2, function(x) gsub("&bull", " ", x)) # suppression des •
+  df = apply(df,2, function(x) gsub("\\s+", " ", x)) # suppression des espaces en trop
+  #df = apply(df,2, function(x) gsub("(?<=[\s])\s*|^\s+|\s+$","", x, perl = TRUE)) # suppression des espaces en trop
+             
   return (df)
 }
 
 
 
 #Sys.setlocale("LC_ALL","French")
-
+#setwd("~/GitHub/M2_Text_Mining/Appli_Text_mining")
 #setwd("~/Documents/M2_SISE/Text_Mining/Projet")
 
 library(httr)
@@ -62,7 +72,7 @@ token = paste("Bearer ", auth_JSON$access_token) ; token
 
 
 #Colonnes à garder
-colstokeep = c("intitule","description","dateCreation","lieuTravail","romeCode","romeLibelle","appellationlibelle","typeContrat","typeContratLibelle","natureContrat","experienceExige","experienceLibelle","secteurActivite","secteurActiviteLibelle") 
+colstokeep = c("intitule","description","dateCreation","lieuTravail","romeCode","romeLibelle","appellationlibelle","entreprise","typeContrat","typeContratLibelle","natureContrat","experienceExige","experienceLibelle","secteurActivite","secteurActiviteLibelle") 
 
 # Data scientist
 request_data_scientist = GET("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+scientist", 
@@ -75,9 +85,11 @@ request_data_engineer = GET("https://api.emploi-store.fr/partenaire/offresdemplo
                             add_headers(Authorization = token))
 df_data_engineer = fromJSON(rawToChar(request_data_engineer$content))$resultats[,colstokeep]
 
-df_data_engineer <- as.data.frame(clean_dataframe(df_data_engineer))
-df_data_scientist <- as.data.frame(clean_dataframe(df_data_scientist))
+df_data_engineer2 <- as.data.frame(clean_dataframe(df_data_engineer))
+df_data_scientist2 <- as.data.frame(clean_dataframe(df_data_scientist))
 
 
+# Exportation des dataframes. 
+write.csv(df_data_engineer2,"C:/Users/Romain/Documents/GitHub/M2_Text_Mining/Appli_Text_mining/df_data_engineer.csv", row.names = FALSE)
 
 
