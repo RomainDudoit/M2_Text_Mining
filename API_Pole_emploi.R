@@ -1,4 +1,13 @@
+library(httr)
+library(jsonlite)
+library(stringi)
+library(sqlite)
+library(DBI)
+
+
+
 rm(list = ls(all = TRUE))
+
 
 
 clean_dataframe <- function(df){
@@ -35,9 +44,7 @@ clean_dataframe <- function(df){
 #setwd("~/GitHub/M2_Text_Mining/Appli_Text_mining")
 #setwd("~/Documents/M2_SISE/Text_Mining/Projet")
 
-library(httr)
-library(jsonlite)
-library(stringi)
+
 
 
 id_client = "PAR_textminingr_b7458e0fe84fea218e101d411a7f861a49e551f3b9bf18c612a5059bdea3be5b"
@@ -89,7 +96,28 @@ df_data_engineer2 <- as.data.frame(clean_dataframe(df_data_engineer))
 df_data_scientist2 <- as.data.frame(clean_dataframe(df_data_scientist))
 
 
+db <- dbConnect(RSQLite::SQLite(), "my-db.sqlite")
+#dbDisconnect(mydb)
+#unlink("my-db.sqlite")
+
+dbWriteTable(db, "data_engineer", df_data_engineer2)
+dbWriteTable(db, "data_engineer", df_data_scientist2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Exportation des dataframes. 
-write.csv(df_data_engineer2,"C:/Users/Romain/Documents/GitHub/M2_Text_Mining/Appli_Text_mining/df_data_engineer.csv", row.names = FALSE)
+write.csv(df_data_engineer2,"C:/Users/Romain/Documents/GitHub/M2_Text_Mining/df_data_engineer.csv", row.names = FALSE)
+write.csv(df_data_scientist2,"C:/Users/Romain/Documents/GitHub/M2_Text_Mining/df_data_scientist.csv", row.names = FALSE)
 
 
