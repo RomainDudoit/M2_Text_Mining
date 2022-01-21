@@ -1,8 +1,8 @@
 library(httr)
 library(jsonlite)
 library(stringi)
-library(sqlite)
 library(DBI)
+library(Rsqlite)
 
 
 
@@ -84,18 +84,29 @@ colstokeep = c("intitule","description","dateCreation","lieuTravail","romeCode",
 # Data scientist
 request_data_scientist = GET("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+scientist", 
                              add_headers(Authorization = token))
-df_data_scientist = fromJSON(rawToChar(request_data_scientist$content))$resultats[,colstokeep]
+df_data_scientist = fromJSON(rawToChar(request_data_scientist$content))$resultats
+df_data_scientist = df_data_scientist[,colstokeep]
 
 
 # Data engineer
 request_data_engineer = GET("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+engineer", 
                             add_headers(Authorization = token))
-df_data_engineer = fromJSON(rawToChar(request_data_engineer$content))$resultats[,colstokeep]
+df_data_engineer = fromJSON(rawToChar(request_data_engineer$content))$resultats
+df_data_engineer = df_data_engineer[,colstokeep]
 
 df_data_engineer2 <- as.data.frame(clean_dataframe(df_data_engineer))
 df_data_scientist2 <- as.data.frame(clean_dataframe(df_data_scientist))
 
 
+localisation <- data.frame(ID_localisation = integer(),
+                           lieu_travail = character(),
+                           User = character(),
+                           stringsAsFactors = FALSE)
+
+df <- data.frame(Date=as.Date(character()),
+                 File=character(), 
+                 User=character(), 
+                 stringsAsFactors=FALSE) 
 db <- dbConnect(RSQLite::SQLite(), "my-db.sqlite")
 #dbDisconnect(mydb)
 #unlink("my-db.sqlite")
@@ -104,20 +115,8 @@ dbWriteTable(db, "data_engineer", df_data_engineer2)
 dbWriteTable(db, "data_engineer", df_data_scientist2)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 # Exportation des dataframes. 
-write.csv(df_data_engineer2,"C:/Users/Romain/Documents/GitHub/M2_Text_Mining/df_data_engineer.csv", row.names = FALSE)
-write.csv(df_data_scientist2,"C:/Users/Romain/Documents/GitHub/M2_Text_Mining/df_data_scientist.csv", row.names = FALSE)
+write.csv(df_data_engineer2,"C:/Users/rodud/Documents/GitHub/M2_Text_Mining/df_data_engineer.csv", row.names = FALSE)
+write.csv(df_data_scientist2,"C:/Users/rodud/Documents/GitHub/M2_Text_Mining/df_data_scientist.csv", row.names = FALSE)
 
 
