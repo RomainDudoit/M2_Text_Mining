@@ -32,6 +32,7 @@ clean_dataframe <- function(df){
   df = apply(df,2, function(x) gsub("├", "р",x)) #iso 8859-1 to utf8
   df = apply(df,2, function(x) gsub("┬", " ",x)) #iso 8859-1 to utf8
   df = apply(df,2, function(x) gsub("ро", "ю",x)) #iso 8859-1 to utf8
+  df = apply(df,2, function(x) gsub("рв", "т",x)) #iso 8859-1 to utf8
   df = apply(df,2, function(x) gsub("р╗", "√",x)) #iso 8859-1 to utf8
   df = apply(df,2, function(x) gsub("[\r\n]", " ", x)) # suppression des retours р la ligne
   df = apply(df,2, function(x) gsub("&bull", " ", x)) # suppression des Х
@@ -117,8 +118,6 @@ for (i in 1:nb_page){
   last_index = last_index+150
 }
 
-df_data_scientist <- rowid_to_column(df_data_scientist, "ID")
-
 
 ##################################################################################################################################
 
@@ -155,6 +154,8 @@ df_data_scientist$dateCreation = as.Date(df_data_scientist$dateCreation) # conve
 df_data_scientist <- df_data_scientist[-which(df_data_scientist$Ville == ""), ]
 df_data_scientist <- df_data_scientist[!is.na(df_data_scientist$Ville), ]
 
+df_data_scientist <- rowid_to_column(df_data_scientist, "ID")
+
 df_data_scientist2 <- df_data_scientist
 
 
@@ -171,11 +172,13 @@ df_data_scientist2 <- left_join(df_data_scientist2,contrat,by=c("typeContrat"="T
 df_data_scientist2 <- left_join(df_data_scientist2,dates,by=c("dateCreation"="Date"))[,-c(19,20)]
 
 
+df_data_scientist2 = df_data_scientist2[!names(df_data_scientist2) %in% c("Departement","Ville","typeContrat","experienceExige","romeCode","romeLibelle","appellationlibelle","secteurActivite","secteurActiviteLibelle","Libelle_Contrat","entreprise.nom")]
+df_data_scientist2 = df_data_scientist2[,c("ID","id_date","id_Ville","id_Exp","id_Contrat","intitule","description")]
 
-df_data_scientist2 = df_data_scientist2[!names(df_data_scientist2) %in% c("Departement","Ville","typeContrat","experienceExige","romeCode","romeLibelle","appellationlibelle","secteurActivite","secteurActiviteLibelle","Libelle_Contrat")]
+lapply(df_data_scientist2,class)
 
 
-write.csv(df_data_scientist2,"C:/Users/rodud/Documents/GitHub/M2_Text_Mining/df_data_scientist.csv", row.names = FALSE)
+write.csv(df_data_scientist2,"C:/Users/Romain/Documents/GitHub/M2_Text_Mining/df_data_scientist.csv", row.names = FALSE,fileEncoding = "UTF-8")
 
 
 
