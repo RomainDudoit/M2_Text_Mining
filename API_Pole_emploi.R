@@ -60,6 +60,8 @@ villes$Num_Dep <- as.character(villes$Num_Dep)
 dates = read.csv("dates.csv")
 dates$Date <- as.Date(dates$Date)
 
+mois = read.csv("mois.csv",encoding = "UTF-8")
+
 
 ##################################################################################################################
 
@@ -102,7 +104,7 @@ colstoremove = c("lieuTravail.longitude","lieuTravail.latitude","lieuTravail.com
 url = "https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+scientist&paysContinent=01"
 first_index = 0
 last_index = 149
-nb_page = 10
+nb_page = 1
 
 df_data_scientist <- data.frame(row.names = NULL)
 
@@ -117,6 +119,11 @@ for (i in 1:nb_page){
   first_index = first_index+150
   last_index = last_index+150
 }
+
+
+#url= GET (https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/searchromeCode)
+
+
 
 
 ##################################################################################################################################
@@ -154,7 +161,13 @@ df_data_scientist$dateCreation = as.Date(df_data_scientist$dateCreation) # conve
 df_data_scientist <- df_data_scientist[-which(df_data_scientist$Ville == ""), ]
 df_data_scientist <- df_data_scientist[!is.na(df_data_scientist$Ville), ]
 
+#df_data_scientist <- df_data_scientist %>% distinct(colnames(df_data_scientist))
+
+
+#df_data_scientist <- df_data_scientist[!duplicated(df_data_scientist)]
+
 df_data_scientist <- rowid_to_column(df_data_scientist, "ID")
+
 
 df_data_scientist2 <- df_data_scientist
 
