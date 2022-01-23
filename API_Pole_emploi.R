@@ -6,6 +6,9 @@ library(RSQLite)
 library(dplyr)
 library(stringr)
 library(tidyr)
+library(lubridate)
+library(tidyverse)
+
 
 
 rm(list = ls(all = TRUE))
@@ -51,6 +54,10 @@ colnames(departements) <- c("id_DEP","NUMERO_DEP","NOM_DEP","CODE_REGION")
 
 villes = read.csv("villes.csv",encoding = "UTF-8")
 colnames(villes) <- c("id_Ville","Num_Dep","Nom_Ville","Longitude","Latitude")
+villes$Num_Dep <- as.character(villes$Num_Dep)
+
+dates = read.csv("dates.csv")
+dates$Date <- as.Date(dates$Date)
 
 
 ##################################################################################################################
@@ -87,7 +94,7 @@ token = paste("Bearer ", auth_JSON$access_token)
 # Colonnes à garder (certains champs ne sont pas directement accessibles car des dataframes sont contenus le df initial)
 colstokeep = c("intitule","description","dateCreation","lieuTravail","romeCode","romeLibelle","appellationlibelle","entreprise","typeContrat","typeContratLibelle","natureContrat","experienceExige","experienceLibelle","secteurActivite","secteurActiviteLibelle") 
 
-colstoremove = c("ville","lieuTravail.longitude","lieuTravail.latitude","lieuTravail.commune","lieuTravail.codePostal","entreprise.logo","entreprise.description","entreprise.entrepriseAdaptee","entreprise.url","entreprise.logo","typeContratLibelle","natureContrat","experienceLibelle")
+colstoremove = c("lieuTravail.longitude","lieuTravail.latitude","lieuTravail.commune","lieuTravail.codePostal","entreprise.logo","entreprise.description","entreprise.entrepriseAdaptee","entreprise.url","entreprise.logo","typeContratLibelle","natureContrat","experienceLibelle")
 
 
 # Recherches des offres de data scientist en France
@@ -110,6 +117,7 @@ for (i in 1:nb_page){
   last_index = last_index+150
 }
 
+df_data_scientist <- rowid_to_column(df_data_scientist, "ID")
 
 
 ##################################################################################################################################
@@ -129,7 +137,7 @@ for (i in 1:nrow(df_data_scientist)){
   }
 }
 
-df_data_scientist$Ville = gsub("\\s*\\([^\\)]+\\)","",df_data_scientist$ville) 
+df_data_scientist$Ville = gsub("\\s*\\([^\\)]+\\)","",df_data_scientist$Ville) 
 df_data_scientist$Ville = gsub(' [[:digit:]]+', '', df_data_scientist$Ville) # Suppression des arrondissements
 df_data_scientist$Ville[df_data_scientist$Ville=="Paris"] <- "PARIS" # Convertion en Uppercase
 df_data_scientist$Ville = gsub("France", '', df_data_scientist$Ville) # Remplace France par rien 
@@ -138,7 +146,6 @@ df_data_scientist$Ville = gsub("\\b[a-z]+\\b", '', df_data_scientist$Ville)
 df_data_scientist[grep("[[:alpha:]][a-z]+|[a-z][[:alpha:]]+",df_data_scientist$Ville),"Ville"] <- "" # Remplace la ville par rien si en lowercase
 df_data_scientist$Ville = gsub("D ", 'D\'', df_data_scientist$Ville) # ajoute un ' après le D
 df_data_scientist$Ville = gsub("L ", 'L\'', df_data_scientist$Ville) # ajoute un ' après le L
-df_data_scientist$ville = trimws(df_data_scientist$Ville)
 df_data_scientist$Ville = gsub(" ", '-', df_data_scientist$Ville) # remplace les espaces par -
 
 
@@ -148,22 +155,29 @@ df_data_scientist$dateCreation = as.Date(df_data_scientist$dateCreation) # conve
 df_data_scientist <- df_data_scientist[-which(df_data_scientist$Ville == ""), ]
 df_data_scientist <- df_data_scientist[!is.na(df_data_scientist$Ville), ]
 
+df_data_scientist2 <- df_data_scientist
+
+
 # Ajout de l'identifiant de la ville
-df_data_scientist <- full_join(df_data_scientist,villes,by=c("Ville"="Nom_Ville"))[,-(15:17)]
+df_data_scientist2 <- left_join(df_data_scientist2,villes,by=c("Ville"="Nom_Ville","Departement"="Num_Dep"))[,-c(16,17)]
 
 # Ajout de l'identifiant de l'experience
-df_data_scientist <- full_join(df_data_scientist,experience,by=c("experienceExige"="Exp_exigee"))[,-c(16)]
+df_data_scientist2 <- left_join(df_data_scientist2,experience,by=c("experienceExige"="Exp_exigee"))[,-c(17)]
 
 # Ajout de l'identifiant du contrat
-df_data_scientist <- full_join(df_data_scientist,contrat,by=c("typeContrat"="Type_Contrat"))[,-c(17)]
+df_data_scientist2 <- left_join(df_data_scientist2,contrat,by=c("typeContrat"="Type_Contrat"))[,-c(18)]
 
-df_data_scientist = df_data_scientist[!names(df_data_scientist) %in% c("Departement","Ville","typeContrat","experienceExige","romeCode","romeLibelle","appellationlibelle","secteurActivite","secteurActiviteLibelle","Libelle_Contrat")]
+# Ajout de l'identifiant de date
+df_data_scientist2 <- left_join(df_data_scientist2,dates,by=c("dateCreation"="Date"))[,-c(19,20)]
 
 
-df <- data.frame(Date=as.Date(character()),
-                 File=character(), 
-                 User=character(), 
-                 stringsAsFactors=FALSE) 
+
+df_data_scientist2 = df_data_scientist2[!names(df_data_scientist2) %in% c("Departement","Ville","typeContrat","experienceExige","romeCode","romeLibelle","appellationlibelle","secteurActivite","secteurActiviteLibelle","Libelle_Contrat")]
+
+
+write.csv(df_data_scientist2,"C:/Users/rodud/Documents/GitHub/M2_Text_Mining/df_data_scientist.csv", row.names = FALSE)
+
+
 
 
 
@@ -178,4 +192,3 @@ dbWriteTable(db, "data_engineer", df_data_scientist)
 # Exportation des dataframes. 
 #write.csv(df_data_engineer2,"C:/Users/rodud/Documents/GitHub/M2_Text_Mining/df_data_engineer.csv", row.names = FALSE)
 #write.csv(df_data_scientist,"C:/Users/rodud/Documents/GitHub/M2_Text_Mining/df_data_scientist.csv", row.names = FALSE)
-
