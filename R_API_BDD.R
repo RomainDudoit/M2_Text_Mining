@@ -17,7 +17,7 @@ token=get_token()
 mydb=connect()
 #recupeation des mots cles de l'api 
 for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
-  data_from_api_to_bdd(mydb,motcle,token)
+  df= data_from_api_to_bdd(mydb,motcle,token)
 
 # à retravailler 
 #maj=date_last_update(mydb)
@@ -30,6 +30,7 @@ for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
 # fermeture de la connexion 
 dbDisconnect(mydb)
 
+#write.csv( data.frame(df),"C:\\Users\\PC-Abdel\\Desktop\\TEXTM\\db.csv", row.names = FALSE, col.names = FALSE)
 
 
 

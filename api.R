@@ -33,6 +33,7 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token){
     index_min= index_min+150
     index_max= index_max+150
   }
+  return (df)
 }
 # 
 # #recuperer les donnees de l'api N'EST PLUS UTILISEE
