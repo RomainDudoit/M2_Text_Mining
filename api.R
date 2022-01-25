@@ -1,7 +1,13 @@
+clean_dataframe <- function(df){
+  df = apply(df,2, function(x) gsub("[\r\n]", " ", x)) # suppression des retours à la ligne
+  df = apply(df,2, function(x) gsub("&bull", " ", x)) # suppression des •
+  df = apply(df,2, function(x) gsub("\\s+", " ", x)) # suppression des espaces en trop
+  df = apply(df,2, function(x) str_trim(x))
+  return (df)
+}
 
-data_from_api_to_bdd<-function (connexion,mot_cle, token){
+data_from_api_to_bdd <-function(connexion,mot_cle, token){
   
-
   #preparer le parametrage
   mot_cle = str_replace_all(mot_cle," ","+")
   # range
@@ -23,8 +29,18 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token){
     request_data=GET(url,add_headers(Authorization = token))
     
     if(status_code(request_data)==206 | status_code(request_data)==200 ){
-      #
+      
+      
       df=as.data.frame(fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)$resultats)
+      
+      #colstokeep = c("intitule","description","dateCreation","lieuTravail","romeCode","romeLibelle","appellationlibelle","entreprise","typeContrat","typeContratLibelle","natureContrat","experienceExige","experienceLibelle","secteurActivite","secteurActiviteLibelle") 
+      #colstoremove = c("lieuTravail.longitude","lieuTravail.latitude","lieuTravail.commune","lieuTravail.codePostal","entreprise.logo","entreprise.description","entreprise.entrepriseAdaptee","entreprise.url","entreprise.logo","typeContratLibelle","natureContrat","experienceLibelle")
+      
+      #print(df)
+      
+      #df = clean_dataframe(df)
+      
+      
       insert_data_int_bdd(connexion,df)
       #si le code different de 206 ou 200, arrêter la boucle
     }else{

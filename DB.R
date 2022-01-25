@@ -16,6 +16,7 @@ execute_requete <-function (connexion, query){
 #Creation de la base de données 
 reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port=3306, dbname="textmining"){
   connexion = dbConnect(MySQL(), user=user, password=password, host=host, port=port)
+  #execute_requete(connection,"RESET QUERY CACHE;")
   execute_requete(connexion,paste("drop database if exists",dbname))
   execute_requete(connexion,paste("create database ",dbname))
   #execute_requete(connexion,"drop table if exists Offre_emploi")
@@ -31,45 +32,46 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
 
   req=""
   req=paste(req,"CREATE TABLE regions(")
-  req=paste(req,"  id_region int,")
   req=paste(req,"  code_insee varchar(50),")
   req=paste(req,"  nom_region  varchar(50),")
-  req=paste(req,"  PRIMARY KEY (id_region)")
+  req=paste(req,"  PRIMARY KEY (code_insee)")
   req=paste(req,");")
   execute_requete(connexion,req)
   
-  regions = read.csv("regions.csv")
-  dbWriteTable(connexion,name ="regions",regions,overwrite=TRUE,row.names=FALSE)
-
-  # req=""
-  # req=paste(req,"CREATE TABLE departements(")
-  # req=paste(req,"  id_dep int,")
-  # req=paste(req,"  numero_dep VARCHAR(3),")
-  # req=paste(req,"  nom_dep varchar(50),")
-  # req=paste(req,"  code_region varchar(50),")
-  # req=paste(req,"  PRIMARY KEY (id_dep)")
-  # req=paste(req,");")
-  # execute_requete(connexion,req)
-  # #req=paste(req,"  FOREIGN KEY (code_region) REFERENCES regions(code_insee)")
-  # #req=paste(req,");")
-  # 
-  # departements = read.csv("departements.csv")
-  # dbWriteTable(connexion,name ="departements",departements,row.names=FALSE)
+  regions = read.csv("regions.csv",sep=";",encoding = "UTF-8")
+  dbWriteTable(connexion,name ="regions",regions,append=TRUE,overwrite=FALSE,row.names=FALSE)
 
   req=""
-  req=paste(req,"CREATE TABLE villes (")
+  req=paste(req,"CREATE TABLE departements(")
+  req=paste(req,"  num_dep VARCHAR(3),")
+  req=paste(req,"  nom_dep varchar(50),")
+  req=paste(req,"  code_region varchar(50),")
+  req=paste(req,"  PRIMARY KEY (num_dep),")
+  req=paste(req,"  FOREIGN KEY (code_region) REFERENCES regions(code_insee)")
+  req=paste(req,");")
+  execute_requete(connexion,req)
+  
+  
+  #req=paste(req,"  FOREIGN KEY (code_region) REFERENCES regions(code_insee)")
+  #req=paste(req,");")
+
+  departements = read.csv("departements.csv",sep=";",encoding = "UTF-8")
+  dbWriteTable(connexion,name ="departements",departements,row.names=FALSE,append=TRUE,overwrite=FALSE)
+
+  req=""
+  req=paste(req,"CREATE TABLE villes(")
   req=paste(req,"  id_ville int,")
   req=paste(req,"  num_dep varchar(3),")
   req=paste(req,"  nom_ville varchar(3),")
   req=paste(req,"  longitude float,")
   req=paste(req,"  latitude float,")
-  req=paste(req,"  PRIMARY KEY (id_ville)")
-  #req=paste(req,"  FOREIGN KEY (num_dep) REFERENCES departement(num_dep)")
-  req=paste(req,"); ")
+  req=paste(req,"  PRIMARY KEY (id_ville),")
+  req=paste(req,"  FOREIGN KEY (num_dep) REFERENCES departements(num_dep)")
+  req=paste(req,");")
   execute_requete(connexion,req)
 
   villes = read.csv("villes.csv")
-  dbWriteTable(connexion,name ="villes.csv",villes,row.names=FALSE)
+  dbWriteTable(connexion,name ="villes",villes,row.names=FALSE,append=FALSE,overwrite=TRUE)
 
 
   req=""
@@ -239,7 +241,7 @@ na_to_null <- function ( text){
   return (text)
 }
 
-insert_data_int_bdd<- function (connexion,df){
+insert_data_int_bdd<- function (connexion,df){ # df en provenance de api.R
   for(i in 1:nrow(df)) {
     if(id_exists(connexion, df[i,"id"])){
       next;

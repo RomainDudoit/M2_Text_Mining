@@ -1,14 +1,14 @@
-id_Region,CODE_INSEE,NOM_REGION
-1,84,Auvergne-Rhône-Alpes
-2,27,Bourgogne-Franche-Comté
-3,53,Bretagne
-4,24,Centre-Val de Loire
-5,94,Corse
-6,44,Grand Est
-7,32,Hauts-de-France
-8,11,Île-de-France
-9,28,Normandie
-10,75,Nouvelle-Aquitaine
-11,76,Occitanie
-12,52,Pays de la Loire
-13,93,Provence-Alpes-Côte d'Azur
+CODE_INSEE;NOM_REGION
+84;Auvergne-Rhône-Alpes
+27;Bourgogne-Franche-Comté
+53;Bretagne
+24;Centre-Val de Loire
+94;Corse
+44;Grand Est
+32;Hauts-de-France
+11;Île-de-France
+28;Normandie
+75;Nouvelle-Aquitaine
+76;Occitanie
+52;Pays de la Loire
+93;Provence-Alpes-Côte d'Azur

@@ -9,13 +9,13 @@ library(RMySQL)
 source("DB.R")
 source("api.R")
 
-#lapply(dbListConnections(MySQL()), dbDisconnect)
+lapply(dbListConnections(MySQL()), dbDisconnect)
 
 
-#initialisation de la base
-reset_base_donnes()
+reset_base_donnes() # DB.R : #création de la base avec insertion des régions et des départements 
+
 # recuperation du token 
-token=get_token()#ouverture de la connexion 
+token=get_token()#ouverture de la connexion
 mydb=connect()
 #recupeation des mots cles de l'api 
 for (motcle in c("Data scientist", "Data engineer", "Data analyst")){
@@ -24,6 +24,11 @@ for (motcle in c("Data scientist", "Data engineer", "Data analyst")){
 
 # fermeture de la connexion 
 dbDisconnect(mydb)
+
+
+
+
+
 
 # ? retravailler 
 #maj=date_last_update(mydb)

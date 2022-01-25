@@ -41,21 +41,9 @@ clean_dataframe <- function(df){
   return (df)
 }
 
-experience <- read.csv("experience.csv",encoding = "UTF-8")
-colnames(experience) <- c("id_Exp","Exp_exigee","Exp_Libelle")
 
-contrat <- read.csv("contrat.csv",encoding = "UTF-8")
-colnames(contrat) <- c("id_Contrat","Type_Contrat","Libelle_Contrat")
 
-regions = read.csv("regions.csv",encoding = "UTF-8")
-colnames(regions) <- c("id_Region","CODE_INSEE","NOM_REGION")
 
-departements = read.csv("departements.csv",encoding = "UTF-8")
-colnames(departements) <- c("id_DEP","NUMERO_DEP","NOM_DEP","CODE_REGION")
-
-villes = read.csv("villes.csv",encoding = "UTF-8")
-colnames(villes) <- c("id_Ville","Num_Dep","Nom_Ville","Longitude","Latitude")
-villes$Num_Dep <- as.character(villes$Num_Dep)
 
 dates = read.csv("dates.csv")
 dates$Date <- as.Date(dates$Date)
