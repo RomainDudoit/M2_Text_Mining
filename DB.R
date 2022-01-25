@@ -18,8 +18,6 @@ insert_into_poste <-function (connexion, id, code_rome, libelle_rome, appellatio
   execute_requete(connexion, query)
 }
 
-exists_in_localisation()
-
 
 insert_into_localisation <-function (connexion,id, nom_lieu_travail, longitudes_lieu_travail, latitudes_lieu_travail){
   query = "insert into localisation (id_localisation, nom_lieu_travail, longitudes_lieu_travail, latitudes_lieu_travail) values ("
@@ -27,9 +25,7 @@ insert_into_localisation <-function (connexion,id, nom_lieu_travail, longitudes_
   execute_requete(connexion, query)
 }
 
-contrat_exist(connexion, type_contrat, libelle_contrat){
-  
-}
+
 insert_into_contrat <-function (connexion, id, type_contrat, libelle_contrat){
   query = "insert into contrat (id_contrat, type_contrat, libelle_contrat) values ("
   query = paste(query,"'",id,"','",type_contrat,"','",libelle_contrat,"')",sep="")
@@ -48,15 +44,15 @@ insert_into_secteur_activite <-function (connexion,id,libelle_secteur, secteur_a
   execute_requete(connexion, query)
 }
 
-insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation){
+insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, categorie, date_creation){
   id_localisation = id
   id_contrat = id
   id_poste = id
   id_experience = id
   id_secteur = id
   id_offre_emploi = id
-  query = "insert into Offre_emploi (intitule_offre, description_offre, date_creation,id_offre,id_localisation, id_contrat, id_poste, id_experience,id_secteur) values ("
-  query = paste(query,"'",sql_text(intitule_offre),"','",sql_text(description_offre),"','",date_creation,"',",sep="")
+  query = "insert into Offre_emploi (intitule_offre, description_offre, categorie, date_creation,id_offre,id_localisation, id_contrat, id_poste, id_experience,id_secteur) values ("
+  query = paste(query,"'",sql_text(intitule_offre),"','",sql_text(description_offre),"','",sql_text(categorie),"','",date_creation,"',",sep="")
   query = paste(query,"'",id_offre_emploi,"','",id_localisation,"','",id_contrat,"','",id_poste,"','",id_experience,"','",id_secteur,"')",sep="")
   execute_requete(connexion, query)
 }
@@ -112,7 +108,7 @@ insert_data_int_bdd<- function (connexion,df){
     insert_into_contrat(connexion,df[i,"id"],df[i,"typeContrat"], df[i,"typeContratLibelle"])
     insert_into_experience (connexion,df[i,"id"],df[i,"experienceLibelle"], df[i,"experienceExige"])
     insert_into_secteur_activite(mydb,df[i,"id"],df[i,"secteurActiviteLibelle"],df[i,"secteurActivite"])
-    insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"intitule"], df[i,"description"],df[i,"dateCreation"])
+    insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"intitule"], df[i,"description"],df[i,"categorie"],df[i,"dateCreation"])
   }
 }
 
@@ -185,6 +181,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   req=paste(req,"  id_poste VARCHAR(10),                                         ")
   req=paste(req,"  id_experience VARCHAR(10),                                    ")
   req=paste(req,"  id_secteur VARCHAR(10),                                       ")
+  req=paste(req,"  categorie VARCHAR(60),                                       ")
   req=paste(req,"  date_creation TEXT,                                         ") 
   req=paste(req,"  intitule_offre VARCHAR(300),                                ")
   req=paste(req,"  description_offre TEXT,                                     ")

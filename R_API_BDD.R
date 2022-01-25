@@ -1,7 +1,8 @@
 #Packages
-install.packages(c("httr", "jsonlite"))
-install.packages('stringr')
-install.packages("RMySQL")
+# install.packages(c("httr", "jsonlite"))
+# install.packages('stringr')
+# install.packages("RMySQL")
+setwd("~/M2_Text_Mining-dev_Fatim-Zahra")
 library(httr)
 library(jsonlite)
 library(stringr)
@@ -33,10 +34,16 @@ dbDisconnect(mydb)
 #write.csv( data.frame(df),"C:\\Users\\PC-Abdel\\Desktop\\TEXTM\\db.csv", row.names = FALSE, col.names = FALSE)
 
 
-
-
-
-
-
+# rs = dbSendQuery(mydb,"SELECT categorie, intitule_offre, description_offre from offre_emploi;")
+# df_textmining = dbFetch(rs)
+# Encoding(df_textmining[["intitule_offre"]]) = "UTF-8"
+# Encoding(df_textmining[["description_offre"]]) = "UTF-8"
+# 
+# df_textmining = df_textmining[df_textmining$categorie != "AUTRE",]
+# table(df_textmining$categorie)
+# 
+# 
+# write.csv(data.frame(df_textmining),"df_textmining.csv")
+# 
 
 

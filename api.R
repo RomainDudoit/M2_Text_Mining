@@ -1,4 +1,13 @@
 
+Add_categorie <- function(df){
+  df$intitule = toupper(df$intitule)
+  df$categorie = "AUTRE"
+  df$categorie[grep("DATA SCIENTIST", df$intitule)] = "DATA SCIENTIST"
+  df$categorie[grep("DATA ANALYST", df$intitule)] = "DATA ANALYST"
+  df$categorie[grep("DATA ENGINEER", df$intitule)] = "DATA ENGINEER"
+  return(df)
+}
+
 data_from_api_to_bdd<-function (connexion,mot_cle, token){
   
 
@@ -25,6 +34,7 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token){
     if(status_code(request_data)==206 | status_code(request_data)==200 ){
       #
       df=as.data.frame(fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)$resultats)
+      df = Add_categorie(df)
       insert_data_int_bdd(connexion,df)
       #si le code different de 206 ou 200, arrêter la boucle
     }else{
@@ -35,6 +45,8 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token){
   }
   return (df)
 }
+
+
 # 
 # #recuperer les donnees de l'api N'EST PLUS UTILISEE
 # get_data_from_api<-function (mot_cle, token){
@@ -60,7 +72,6 @@ get_token <- function (){
   id_client = "PAR_textminingr_b7458e0fe84fea218e101d411a7f861a49e551f3b9bf18c612a5059bdea3be5b"
   cle_secrete = "5feab49ea00bb939a6224dfb224b13d895b7ea21021a67c6468b5a663f410eab"
   
-  
   # I. Generer un access token (client credentials)
   request_body <- list(grant_type = "client_credentials",
                        client_id = id_client,
@@ -76,6 +87,4 @@ get_token <- function (){
   token = paste("Bearer ", auth_JSON$access_token) ; token
   return (token)
 }
-
-
 
