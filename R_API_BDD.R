@@ -9,6 +9,7 @@ library(RMySQL)
 source("DB.R")
 source("api.R")
 
+
 #initialisation de la base
 reset_base_donnes()
 # recuperation du token 

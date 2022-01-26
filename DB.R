@@ -18,8 +18,6 @@ insert_into_poste <-function (connexion, id, code_rome, libelle_rome, appellatio
   execute_requete(connexion, query)
 }
 
-exists_in_localisation()
-
 
 insert_into_localisation <-function (connexion,id, nom_lieu_travail, longitudes_lieu_travail, latitudes_lieu_travail){
   query = "insert into localisation (id_localisation, nom_lieu_travail, longitudes_lieu_travail, latitudes_lieu_travail) values ("
@@ -27,9 +25,18 @@ insert_into_localisation <-function (connexion,id, nom_lieu_travail, longitudes_
   execute_requete(connexion, query)
 }
 
-contrat_exist(connexion, type_contrat, libelle_contrat){
-  
+get_contrat<- function(connexion, type_contrat, libelle_contrat){
+  req = "select id_contrat, type_contrat, libelle_contrat from contrat where "
+  req = paste(req,"type_contrat ='",type_contrat,"'",sep="")
+  #req = paste(req," and libelle_contrat ='",libelle_contrat,"'",sep="")
+  return (dbGetQuery(connexion, req)[1,1])
 }
+
+get_poste<- function(connexion, code_rom){
+  req = paste("select id_poste from poste where code_rome='",code_rom,"'", sep="")
+  return (dbGetQuery(connexion, req)[1,1])
+}
+
 insert_into_contrat <-function (connexion, id, type_contrat, libelle_contrat){
   query = "insert into contrat (id_contrat, type_contrat, libelle_contrat) values ("
   query = paste(query,"'",id,"','",type_contrat,"','",libelle_contrat,"')",sep="")
@@ -48,10 +55,8 @@ insert_into_secteur_activite <-function (connexion,id,libelle_secteur, secteur_a
   execute_requete(connexion, query)
 }
 
-insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation){
+insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation, id_contrat, id_poste){
   id_localisation = id
-  id_contrat = id
-  id_poste = id
   id_experience = id
   id_secteur = id
   id_offre_emploi = id
@@ -64,9 +69,9 @@ insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_of
 
 
 #Execution de la requete
-execute_requete <-function (connexion, query){
+execute_requete <-function (connexion, query, nbrRow=0){
   rs <- dbSendQuery(connexion, query)
-  data = dbFetch(rs)
+  data = dbFetch(rs, nbrRow)
   dbClearResult(rs)
   return (data)
 }
@@ -77,13 +82,9 @@ sql_text <- function ( text){
 }
 
 id_exists<- function(connexion, id){
-  rs = dbSendQuery(connexion, paste("select id_poste  from poste where id_poste='",id,"'",sep=""))
+  rs = dbSendQuery(connexion, paste("select id_offre  from Offre_emploi where id_offre='",id,"'",sep=""))
   data=dbFetch(rs,1)
   count = dbGetRowCount(rs)
-  #print("-========>")
-  #print(paste("select id_poste  from poste where id_poste='",id,"'",sep=""))
-  #print(data)
-  #print(count)
   dbClearResult(rs)
   if (count==0){
       return (FALSE)
@@ -102,17 +103,43 @@ na_to_null <- function ( text){
 
 insert_data_int_bdd<- function (connexion,df){
   for(i in 1:nrow(df)) {
-    if(id_exists(connexion, df[i,"id"])){
+    id = df[i,"id"]
+    if(id_exists(connexion, id)){
       next;
     }
     
-    insert_into_poste (connexion,df[i,"id"], df[i,"romeCode"], df[i,"romeLibelle"],
+    id_poste= get_poste(connexion, df[i,"romeCode"])
+    if(is.na(id_poste)){
+      insert_into_poste (connexion,id, df[i,"romeCode"], df[i,"romeLibelle"],
                        df[i,"appellationlibelle"])
-    insert_into_localisation(connexion,df[i,"id"],df[i,"lieuTravail.libelle"],df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
-    insert_into_contrat(connexion,df[i,"id"],df[i,"typeContrat"], df[i,"typeContratLibelle"])
-    insert_into_experience (connexion,df[i,"id"],df[i,"experienceLibelle"], df[i,"experienceExige"])
-    insert_into_secteur_activite(mydb,df[i,"id"],df[i,"secteurActiviteLibelle"],df[i,"secteurActivite"])
-    insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"intitule"], df[i,"description"],df[i,"dateCreation"])
+      id_poste=id
+    }
+    
+    #id_localisation = get_localisation(tconnexion= df[i,"typeContrat"], df[i,"typeContratLibelle"])
+    #if(is.na(id_contrat)){
+      insert_into_localisation(connexion,id,df[i,"lieuTravail.libelle"],df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
+    # id_localisation=id
+    #}
+    
+    id_contrat = get_contrat(connexion, df[i,"typeContrat"], df[i,"typeContratLibelle"])
+    if(is.na(id_contrat)){
+      insert_into_contrat(connexion,id,df[i,"typeContrat"], df[i,"typeContratLibelle"])
+      id_contrat=id
+    }
+    
+    #id_localisation = get_localisation(tconnexion= df[i,"typeContrat"], df[i,"typeContratLibelle"])
+    #if(is.na(id_contrat)){
+    insert_into_experience (connexion,id,df[i,"experienceLibelle"], df[i,"experienceExige"])
+    # id_localisation=id
+    #}
+    
+    #id_localisation = get_localisation(tconnexion= df[i,"typeContrat"], df[i,"typeContratLibelle"])
+    #if(is.na(id_contrat)){
+    insert_into_secteur_activite(mydb,id,df[i,"secteurActiviteLibelle"],df[i,"secteurActivite"])
+    # id_localisation=id
+    #}
+    
+    insert_into_Offre_emploi (connexion,id,df[i,"intitule"], df[i,"description"],df[i,"dateCreation"], id_contrat, id_poste)
   }
 }
 
@@ -121,6 +148,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   connexion = dbConnect(MySQL(), user=user, password=password, host=host, port=port)
   execute_requete(connexion,paste("drop database if exists",dbname))
   execute_requete(connexion,paste("create database ",dbname))
+  execute_requete(connexion,paste("use  ",dbname))
   #execute_requete(connexion,"drop table if exists Offre_emploi")
   #execute_requete(connexion,"drop table if exists localisation")
   #execute_requete(connexion,"drop table if exists contrat")
@@ -129,6 +157,9 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   #execute_requete(connexion,"drop table if exists secteur_activite")
   dbDisconnect(connexion)
   connexion = connect( user, password, dbname,host, port)
+  execute_requete(connexion, "SET NAMES utf8mb4")
+  execute_requete(connexion, "SET CHARACTER SET utf8mb4")
+  execute_requete(connexion, "SET character_set_connection=utf8mb4")
     
   req=""
   req=paste(req,"CREATE TABLE localisation (                                   ")
