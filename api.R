@@ -89,6 +89,8 @@ data_from_api_to_bdd <-function(connexion,mot_cle, token){
       df <- df[-which(df$ville == ""), ]
       df <- df[!is.na(df$ville), ]
       
+      print(colnames(df))
+      
       #communes = read.csv("communes.csv")
       
       #df2 <- df

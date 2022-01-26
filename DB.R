@@ -43,7 +43,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
 
   req=""
   req=paste(req,"CREATE TABLE departements(")
-  req=paste(req,"  num_dep VARCHAR(3),")
+  req=paste(req,"  num_dep varchar(3),")
   req=paste(req,"  nom_dep varchar(50),")
   req=paste(req,"  code_region varchar(50),")
   req=paste(req,"  PRIMARY KEY (num_dep),")
@@ -52,15 +52,12 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   execute_requete(connexion,req)
   
   
-  #req=paste(req,"  FOREIGN KEY (code_region) REFERENCES regions(code_insee)")
-  #req=paste(req,");")
-
   departements = read.csv("departements.csv",sep=";",encoding = "UTF-8")
   dbWriteTable(connexion,name ="departements",departements,row.names=FALSE,append=TRUE,overwrite=FALSE)
 
   req=""
   req=paste(req,"CREATE TABLE communes(")
-  req=paste(req,"  num_commune int,")
+  req=paste(req,"  num_commune varchar(5),")
   req=paste(req,"  num_dep varchar(3),")
   req=paste(req,"  nom_ville varchar(3),")
   req=paste(req,"  longitude float,")
@@ -74,30 +71,16 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   dbWriteTable(connexion,name ="communes",communes,row.names=FALSE,append=FALSE,overwrite=TRUE)
   
   
-  
   req=""
-  req=paste(req,"CREATE TABLE Offre_emploi(                                    ")
-  req=paste(req,"  id_offre VARCHAR(10),                 ")
-  #req=paste(req,"  id_contrat VARCHAR(10),                                       ")
-  #req=paste(req,"  id_poste VARCHAR(10),                                         ")
-  #req=paste(req,"  id_experience VARCHAR(10),                                    ")
-  #req=paste(req,"  id_secteur VARCHAR(10),                                       ")
-  req=paste(req,"  date_creation TEXT,                                         ") 
-  req=paste(req,"  intitule_offre VARCHAR(300),                                ")
-  req=paste(req,"  intitule_offre VARCHAR(300),                                ")
-  req=paste(req,"  description_offre TEXT,                                     ")
-  req=paste(req,"  CONSTRAINT PK_offre PRIMARY KEY (id_offre),                 ")
-  req=paste(req,"  FOREIGN KEY (id_localisation)                               ")
-  req=paste(req,"  REFERENCES localisation (id_localisation) ,                 ")
-  req=paste(req,"  FOREIGN KEY (id_contrat)                                    ")
-  req=paste(req,"  REFERENCES contrat (id_contrat),                            ")
-  req=paste(req,"  FOREIGN KEY (id_poste)                                      ")
-  req=paste(req,"  REFERENCES poste (id_poste),                                ")
-  req=paste(req,"  FOREIGN KEY (id_experience)                                 ")
-  req=paste(req,"  REFERENCES experience (id_experience)	,                    ")
-  req=paste(req,"  FOREIGN KEY (id_secteur)                                    ")
-  req=paste(req,"  REFERENCES secteur_activite (id_secteur)		                 ")
-  req=paste(req,")                                                              ")
+  req=paste(req,"CREATE TABLE Offre_emploi(")
+  req=paste(req,"  id_offre VARCHAR(10),")
+  req=paste(req,"  date_creation DATE,") 
+  req=paste(req,"  num_commune VARCHAR(5),") 
+  req=paste(req,"  intitule_offre VARCHAR(300),")
+  req=paste(req,"  description_offre TEXT,")
+  req=paste(req,"  PRIMARY KEY (id_offre),")
+  req=paste(req,"  FOREIGN KEY (num_commune) REFERENCES communes(num_commune)")
+  req=paste(req,");")
   execute_requete(connexion,req)
 
 
@@ -226,16 +209,16 @@ insert_into_secteur_activite <-function (connexion,id,libelle_secteur, secteur_a
   execute_requete(connexion, query)
 }
 
-insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation){
-  id_localisation = id
-  id_contrat = id
-  id_poste = id
-  id_experience = id
-  id_secteur = id
-  id_offre_emploi = id
-  query = "insert into Offre_emploi (intitule_offre, description_offre, date_creation,id_offre,id_localisation, id_contrat, id_poste, id_experience,id_secteur) values ("
-  query = paste(query,"'",sql_text(intitule_offre),"','",sql_text(description_offre),"','",date_creation,"',",sep="")
-  query = paste(query,"'",id_offre_emploi,"','",id_localisation,"','",id_contrat,"','",id_poste,"','",id_experience,"','",id_secteur,"')",sep="")
+insert_into_Offre_emploi <-function (connexion,id,date_creation,num_commune,intitule_offre, description_offre){
+  #id_localisation = id
+  #id_contrat = id
+  #id_poste = id
+  #id_experience = id
+  #id_secteur = id
+  #id_offre_emploi = id
+  query = "insert into Offre_emploi (id_offre, date_creation,num_commune,intitule_offre,description_offre) values ("
+  query = paste(query,"'",id,"','",date_creation,"','",num_commune,"','",sql_text(intitule_offre),"','",sql_text(description_offre),"')",sep="")
+  #query = paste(query,"'",id_offre_emploi,"','",id_localisation,"','",id_contrat,"','",id_poste,"','",id_experience,"','",id_secteur,"')",sep="")
   execute_requete(connexion, query)
 }
 
@@ -274,12 +257,14 @@ insert_data_int_bdd<- function (connexion,df){ # df en provenance de api.R
       next;
     }
     
-    insert_into_poste (connexion,df[i,"id"], df[i,"romeCode"], df[i,"romeLibelle"],
-                       df[i,"appellationlibelle"])
+    #insert_into_poste (connexion,df[i,"id"], df[i,"romeCode"], df[i,"romeLibelle"],df[i,"appellationlibelle"])
     insert_into_localisation(connexion,df[i,"id"],df[i,"lieuTravail.libelle"],df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
     insert_into_contrat(connexion,df[i,"id"],df[i,"typeContrat"], df[i,"typeContratLibelle"])
     insert_into_experience (connexion,df[i,"id"],df[i,"experienceLibelle"], df[i,"experienceExige"])
     insert_into_secteur_activite(mydb,df[i,"id"],df[i,"secteurActiviteLibelle"],df[i,"secteurActivite"])
-    insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"intitule"], df[i,"description"],df[i,"dateCreation"])
+    insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"dateCreation"],df[i,"lieuTravail.commune"],df[i,"intitule"], df[i,"description"])
+    
+    #insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"dateCreation"],df[i,"lieuTravail.commune"],df[i,"intitule"], df[i,"description"])
+    #insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"intitule"], df[i,"description"],df[i,"dateCreation"])
   }
 }
