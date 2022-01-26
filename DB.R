@@ -55,13 +55,13 @@ insert_into_secteur_activite <-function (connexion,id,libelle_secteur, secteur_a
   execute_requete(connexion, query)
 }
 
-insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation, id_contrat, id_poste){
+insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation, id_contrat, id_poste, categorie){
   id_localisation = id
   id_experience = id
   id_secteur = id
   id_offre_emploi = id
-  query = "insert into Offre_emploi (intitule_offre, description_offre, date_creation,id_offre,id_localisation, id_contrat, id_poste, id_experience,id_secteur) values ("
-  query = paste(query,"'",sql_text(intitule_offre),"','",sql_text(description_offre),"','",date_creation,"',",sep="")
+  query = "insert into Offre_emploi (intitule_offre, description_offre, categorie, date_creation,id_offre,id_localisation, id_contrat, id_poste, id_experience,id_secteur) values ("
+  query = paste(query,"'",sql_text(intitule_offre),"','",sql_text(description_offre),"','",sql_text(categorie),"','",date_creation,"',",sep="")
   query = paste(query,"'",id_offre_emploi,"','",id_localisation,"','",id_contrat,"','",id_poste,"','",id_experience,"','",id_secteur,"')",sep="")
   execute_requete(connexion, query)
 }
@@ -139,7 +139,7 @@ insert_data_int_bdd<- function (connexion,df){
     # id_localisation=id
     #}
     
-    insert_into_Offre_emploi (connexion,id,df[i,"intitule"], df[i,"description"],df[i,"dateCreation"], id_contrat, id_poste)
+    insert_into_Offre_emploi (connexion,id,df[i,"intitule"], df[i,"description"],df[i,"dateCreation"], id_contrat, id_poste, df[i,"categorie"])
   }
 }
 
@@ -216,6 +216,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   req=paste(req,"  id_poste VARCHAR(10),                                         ")
   req=paste(req,"  id_experience VARCHAR(10),                                    ")
   req=paste(req,"  id_secteur VARCHAR(10),                                       ")
+  req=paste(req,"  categorie VARCHAR(60),                                       ")
   req=paste(req,"  date_creation TEXT,                                         ") 
   req=paste(req,"  intitule_offre VARCHAR(300),                                ")
   req=paste(req,"  description_offre TEXT,                                     ")
