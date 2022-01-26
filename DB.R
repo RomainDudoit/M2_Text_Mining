@@ -59,19 +59,19 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   dbWriteTable(connexion,name ="departements",departements,row.names=FALSE,append=TRUE,overwrite=FALSE)
 
   req=""
-  req=paste(req,"CREATE TABLE villes(")
-  req=paste(req,"  id_ville int,")
+  req=paste(req,"CREATE TABLE communes(")
+  req=paste(req,"  num_commune int,")
   req=paste(req,"  num_dep varchar(3),")
   req=paste(req,"  nom_ville varchar(3),")
   req=paste(req,"  longitude float,")
   req=paste(req,"  latitude float,")
-  req=paste(req,"  PRIMARY KEY (id_ville),")
+  req=paste(req,"  PRIMARY KEY (num_commune),")
   req=paste(req,"  FOREIGN KEY (num_dep) REFERENCES departements(num_dep)")
   req=paste(req,");")
   execute_requete(connexion,req)
 
-  villes = read.csv("villes.csv")
-  dbWriteTable(connexion,name ="villes",villes,row.names=FALSE,append=FALSE,overwrite=TRUE)
+  communes = read.csv("communes.csv")
+  dbWriteTable(connexion,name ="communes",communes,row.names=FALSE,append=FALSE,overwrite=TRUE)
 
 
   req=""

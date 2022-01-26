@@ -6,13 +6,19 @@ library(httr)
 library(jsonlite)
 library(stringr)
 library(RMySQL)
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(lubridate)
+library(tidyverse)
+library(stringi)
 source("DB.R")
 source("api.R")
 
 lapply(dbListConnections(MySQL()), dbDisconnect)
 
 
-reset_base_donnes() # DB.R : #création de la base avec insertion des régions et des départements 
+reset_base_donnes() # DB.R : #cr?ation de la base avec insertion des r?gions et des d?partements 
 
 # recuperation du token 
 token=get_token()#ouverture de la connexion
