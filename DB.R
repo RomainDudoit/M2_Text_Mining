@@ -52,7 +52,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   execute_requete(connexion,req)
   
   
-  departements = read.csv("departements.csv",sep=";",encoding = "UTF-8")
+  departements = read.csv("departements.csv",sep=",",encoding = "UTF-8")
   dbWriteTable(connexion,name ="departements",departements,row.names=FALSE,append=TRUE,overwrite=FALSE)
 
   req=""
@@ -72,14 +72,13 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   
   
   req=""
-  req=paste(req,"CREATE TABLE Offre_emploi(")
-  req=paste(req,"  id_offre VARCHAR(10),")
-  req=paste(req,"  date_creation DATE,") 
-  req=paste(req,"  num_commune VARCHAR(5),") 
-  req=paste(req,"  intitule_offre VARCHAR(300),")
-  req=paste(req,"  description_offre TEXT,")
-  req=paste(req,"  PRIMARY KEY (id_offre),")
-  req=paste(req,"  FOREIGN KEY (num_commune) REFERENCES communes(num_commune)")
+  req=paste(req,"CREATE TABLE offre_emploi (")
+  req=paste(req,"  id varchar(10),")
+  req=paste(req,"  dateCreation varchar(30),") 
+  req=paste(req,"  num_commune varchar(5),") 
+  req=paste(req,"  intitule VARCHAR(300),")
+  req=paste(req,"  description varchar(300),")
+  req=paste(req,"  PRIMARY KEY (id)")
   req=paste(req,");")
   execute_requete(connexion,req)
 
@@ -222,6 +221,14 @@ insert_into_Offre_emploi <-function (connexion,id,date_creation,num_commune,inti
   execute_requete(connexion, query)
 }
 
+insert_into_Offre_emploi2 <-function (connexion,df){
+  names(df)[names(df) == "lieuTravail.commune"] <- "num_commune"
+  dbWriteTable(connexion,name ="offre_emploi",df,row.names=FALSE,append=TRUE,overwrite=FALSE)
+  
+}
+
+
+
 #
 sql_text <- function ( text){
   return (str_replace_all(text,"'","''"))
@@ -258,13 +265,16 @@ insert_data_int_bdd<- function (connexion,df){ # df en provenance de api.R
     }
     
     #insert_into_poste (connexion,df[i,"id"], df[i,"romeCode"], df[i,"romeLibelle"],df[i,"appellationlibelle"])
-    insert_into_localisation(connexion,df[i,"id"],df[i,"lieuTravail.libelle"],df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
-    insert_into_contrat(connexion,df[i,"id"],df[i,"typeContrat"], df[i,"typeContratLibelle"])
-    insert_into_experience (connexion,df[i,"id"],df[i,"experienceLibelle"], df[i,"experienceExige"])
-    insert_into_secteur_activite(mydb,df[i,"id"],df[i,"secteurActiviteLibelle"],df[i,"secteurActivite"])
-    insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"dateCreation"],df[i,"lieuTravail.commune"],df[i,"intitule"], df[i,"description"])
+    #insert_into_localisation(connexion,df[i,"id"],df[i,"lieuTravail.libelle"],df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
+    #insert_into_contrat(connexion,df[i,"id"],df[i,"typeContrat"], df[i,"typeContratLibelle"])
+    #insert_into_experience (connexion,df[i,"id"],df[i,"experienceLibelle"], df[i,"experienceExige"])
+    #insert_into_secteur_activite(mydb,df[i,"id"],df[i,"secteurActiviteLibelle"],df[i,"secteurActivite"])
+    #insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"dateCreation"],df[i,"lieuTravail.commune"],df[i,"intitule"], df[i,"description"])
+    #insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"dateCreation"],df[i,"lieuTravail.commune"],df[i,"intitule"], df[i,"description"])
+    
     
     #insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"dateCreation"],df[i,"lieuTravail.commune"],df[i,"intitule"], df[i,"description"])
     #insert_into_Offre_emploi (connexion,df[i,"id"],df[i,"intitule"], df[i,"description"],df[i,"dateCreation"])
   }
+  insert_into_Offre_emploi2 (connexion,df[,c("id","dateCreation","lieuTravail.commune","intitule","description")])
 }

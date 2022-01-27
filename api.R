@@ -23,9 +23,14 @@ get_token <- function (){
 
 
 clean_dataframe <- function(df){
+  print(class(df))
+  print(colnames(df))
   df = apply(df,2, function(x) gsub("[\r\n]", " ", x)) # suppression des retours ? la ligne
-  df = apply(df,2, function(x) gsub("&bull", " ", x)) # suppression des ?
+  #df = apply(df,2, function(x) gsub("&bull", " ", x)) # suppression des ?
   df = apply(df,2, function(x) gsub("\\s+", " ", x)) # suppression des espaces en trop
+  df = apply(df,2, function(x) gsub("\'", " ", x)) # suppression des espaces en trop
+  df = apply(df,2, function(x) gsub(".", " ", x)) # suppression des espaces en trop
+  
   df = apply(df,2, function(x) str_trim(x))
   return (df)
 }
@@ -89,7 +94,7 @@ data_from_api_to_bdd <-function(connexion,mot_cle, token){
       df <- df[-which(df$ville == ""), ]
       df <- df[!is.na(df$ville), ]
       
-      print(colnames(df))
+      #print(colnames(df))
       
       #communes = read.csv("communes.csv")
       
@@ -104,7 +109,8 @@ data_from_api_to_bdd <-function(connexion,mot_cle, token){
       
       #print(df)
       
-      #df = clean_dataframe(df)
+      df = as.data.frame(clean_dataframe(df))
+      #print(df)
       
       
       insert_data_int_bdd(connexion,df)
