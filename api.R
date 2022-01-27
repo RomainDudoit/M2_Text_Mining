@@ -30,7 +30,7 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token){
     print(url)
     
     request_data=GET(url,add_headers(Authorization = token))
-    
+    print(status_code(request_data))
     if(status_code(request_data)==206 | status_code(request_data)==200 ){
       #
       df=as.data.frame(fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)$resultats)
@@ -45,26 +45,6 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token){
   }
   return (df)
 }
-
-
-# 
-# #recuperer les donnees de l'api N'EST PLUS UTILISEE
-# get_data_from_api<-function (mot_cle, token){
-#   
-#   #preparer le param
-#   mot_cle = str_replace_all(mot_cle," ","+")
-#   index_min=0
-#   index_max=149
-#   url = paste("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=",mot_cle,sep="")
-#     
-#   print(url)
-#   request_data=GET(url,add_headers(Authorization = token))
-#   df=as.data.frame(fromJSON(rawToChar(request_data$content))$resultats[,colstokeep])
-#   
-#   request_data=GET(url,add_headers(Authorization = token))
-#   df=as.data.frame(fromJSON(rawToChar(request_data$content))$resultats[,colstokeep])
-#   return (as.data.frame(clean_dataframe(df)))
-# }
 
 
 get_token <- function (){

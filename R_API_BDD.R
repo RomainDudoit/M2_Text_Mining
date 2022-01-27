@@ -2,14 +2,15 @@
 # install.packages(c("httr", "jsonlite"))
 # install.packages('stringr')
 # install.packages("RMySQL")
-setwd("~/M2_Text_Mining-dev_Fatim-Zahra")
+#install.packages("utf8")
+
 library(httr)
 library(jsonlite)
 library(stringr)
 library(RMySQL)
+library(utf8)
 source("DB.R")
 source("api.R")
-
 
 #initialisation de la base
 reset_base_donnes()
@@ -20,14 +21,6 @@ mydb=connect()
 #recupeation des mots cles de l'api 
 for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
   df= data_from_api_to_bdd(mydb,motcle,token)
-
-# � retravailler 
-#maj=date_last_update(mydb)
-#if(is.na(maj)){
-#  urlavecdate<-paste("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+engineer&&dateCreation=",maj)
-#}else{
-#  urlavecdate<-"https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+engineer&&dateCreation="
-#}
 
 # fermeture de la connexion 
 dbDisconnect(mydb)
@@ -47,4 +40,12 @@ dbDisconnect(mydb)
 # write.csv(data.frame(df_textmining),"df_textmining.csv")
 # 
 
+
+# Ã  retravailler 
+#maj=date_last_update(mydb)
+#if(is.na(maj)){
+#  urlavecdate<-paste("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+engineer&&dateCreation=",maj)
+#}else{
+#  urlavecdate<-"https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+engineer&&dateCreation="
+#}
 
