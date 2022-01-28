@@ -48,9 +48,11 @@ insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_of
 }
 
 # Vérifier si l'enregistrement est deja dans la base, si oui il recupere le id, sinon il l'insere et recupere son id 
-get_localisation<- function(connexion, longitudes_lieu_travail, latitudes_lieu_travail){
-  return (NA)
-}
+# #get_localisation<- function(connexion,lieuTravail.commune){
+#   req = "select id_localisation from localisation where "
+#   req = paste(req,"lieuTravail.commune =",dbQuoteString(connexion, lieuTravail.commune),sep="")
+#   return (dbGetQuery(connexion, req)[1,1])
+# }
 
 get_experience<- function(connexion, libelle_experience, experience_exigee){
   
@@ -195,24 +197,70 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   execute_requete(connexion,req)
   
   req=""
-  req=paste(req,"CREATE TABLE contrat(                                         ")  
-  req=paste(req,"  id_contrat VARCHAR(10),               ")       
-  req=paste(req,"  type_contrat VARCHAR(30),                                   ")       
-  req=paste(req,"  libelle_contrat VARCHAR(300),                               ")        
-  req=paste(req,"  CONSTRAINT PK_contrat PRIMARY KEY (id_contrat)              ")       
-  req=paste(req,");                                                            ")     
+  req=paste(req,"CREATE TABLE regions(")
+  req=paste(req," code_insee varchar(50),")
+  req=paste(req," nom_region varchar(50),")
+  req=paste(req," PRIMARY KEY (code_insee)")
+  req=paste(req,");")
   execute_requete(connexion,req)
-  
+
+  regions = read.csv("regions.csv",sep=";",encoding = "UTF-8")
+  dbWriteTable(connexion,name ="regions",regions,append=TRUE,overwrite=FALSE,row.names=FALSE)
+
+  # 
+  # 
+  # req=""
+  # req=paste(req,"CREATE TABLE departements(")
+  # req=paste(req," num_dep varchar(3),")
+  # req=paste(req," nom_dep varchar(50),")
+  # req=paste(req," code_region varchar(50),")
+  # req=paste(req," PRIMARY KEY (num_dep),")
+  # req=paste(req," FOREIGN KEY (code_region) REFERENCES regions(code_insee)")
+  # req=paste(req,");")
+  # execute_requete(connexion,req)
+  # 
+  # 
+  # departements = read.csv("departements.csv",sep=",",encoding = "UTF-8")
+  # dbWriteTable(connexion,name ="departements",departements,row.names=FALSE,append=TRUE,overwrite=FALSE)
+  # 
+  # 
+  # 
+  # req=""
+  # req=paste(req,"CREATE TABLE communes(")
+  # req=paste(req," num_commune varchar(5),")
+  # req=paste(req," num_dep varchar(3),")
+  # req=paste(req," nom_ville varchar(3),")
+  # req=paste(req," longitude float,")
+  # req=paste(req," latitude float,")
+  # req=paste(req," PRIMARY KEY (num_commune),")
+  # req=paste(req," FOREIGN KEY (num_dep) REFERENCES departements(num_dep)")
+  # req=paste(req,");")
+  # execute_requete(connexion,req)
+  # 
+  # 
+  # 
+  # communes = read.csv("communes.csv")
+  # dbWriteTable(connexion,name ="communes",communes,row.names=FALSE,append=FALSE,overwrite=TRUE)
+  # 
   req=""
-  req=paste(req,"CREATE TABLE poste(                                           ")     
-  req=paste(req,"  id_poste VARCHAR(10),                 ")       
-  req=paste(req,"  code_rome VARCHAR(10),                                      ")       
-  req=paste(req,"  libelle_rome TEXT,                                          ")       
-  req=paste(req,"  appellation_libelle TEXT,                                   ")       
-  req=paste(req,"  CONSTRAINT PK_poste PRIMARY KEY (id_poste)                  ")       
-  req=paste(req,");                                                            ")     
+  req=paste(req,"CREATE TABLE contrat(                                         ")
+  req=paste(req,"  id_contrat VARCHAR(10),               ")
+  req=paste(req,"  type_contrat VARCHAR(30),                                   ")
+  req=paste(req,"  libelle_contrat VARCHAR(300),                               ")
+  req=paste(req,"  CONSTRAINT PK_contrat PRIMARY KEY (id_contrat)              ")
+  req=paste(req,");                                                            ")
   execute_requete(connexion,req)
-  
+
+  req=""
+  req=paste(req,"CREATE TABLE poste(                                           ")
+  req=paste(req,"  id_poste VARCHAR(10),                 ")
+  req=paste(req,"  code_rome VARCHAR(10),                                      ")
+  req=paste(req,"  libelle_rome TEXT,                                          ")
+  req=paste(req,"  appellation_libelle TEXT,                                   ")
+  req=paste(req,"  CONSTRAINT PK_poste PRIMARY KEY (id_poste)                  ")
+  req=paste(req,");                                                            ")
+  execute_requete(connexion,req)
+
   req=""
   req=paste(req,"CREATE TABLE experience(                                      ")     
   req=paste(req,"  id_experience VARCHAR(10),            ")       
