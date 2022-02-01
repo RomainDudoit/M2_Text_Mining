@@ -16,8 +16,12 @@ source("api.R")
 reset_base_donnes()
 # recuperation du token 
 token=get_token()
+
 #ouverture de la connexion 
 mydb=connect()
+
+mise_a_jour_referentiel(mydb, token)
+
 #recupeation des mots cles de l'api 
 for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
   df= data_from_api_to_bdd(mydb,motcle,token)
@@ -25,6 +29,12 @@ for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
 # fermeture de la connexion 
 dbDisconnect(mydb)
 
+
+#url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/communes"
+#url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/departements"
+#request_data=GET(url,add_headers(Authorization = token))
+#data= fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)
+#print(data)
 #write.csv( data.frame(df),"C:\\Users\\PC-Abdel\\Desktop\\TEXTM\\db.csv", row.names = FALSE, col.names = FALSE)
 
 
@@ -44,8 +54,26 @@ dbDisconnect(mydb)
 # ÃƒÂ  retravailler 
 #maj=date_last_update(mydb)
 #if(is.na(maj)){
-#  urlavecdate<-paste("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+engineer&&dateCreation=",maj)
+#  print("aucune date n'a été trouvé")
 #}else{
-#  urlavecdate<-"https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+engineer&&dateCreation="
+#  print(maj)
 #}
+#now = format(Sys.time(), "%Y-%m-%dT%H:%M:%OSZ")
+#now
+#maj
+
+
+
+
+# dateCreation
+#paste(strptime(as.character(row[9]), tz = tz, format = "%Y-%m-%dT%H:%M:%OSZ"), collapse = ", "), # dateActualisation
+
+#url = "https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=Data+scientist"
+
+#print(url)
+
+#request_data=GET(url,add_headers(Authorization = token))
+#print(request_data)
+#df=as.data.frame(fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)$resultats)
+#print(df)
 

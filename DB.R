@@ -5,6 +5,27 @@ connect<-function(user='root', password='root', dbname='textmining', host='127.0
   return (mydb)
 }
 
+insert_into_regions <-function (connexion, nom, code){
+  req = "INSERT INTO ref_regions (nom_region, code_region) VALUES ("
+  req = paste (req,dbQuoteString(connexion,nom),",",dbQuoteString(connexion,code),")")
+  #print(req)
+  dbGetQuery(connexion, req)
+}
+insert_into_departements <-function (connexion, nom, code, codeRegion){
+  req = "INSERT INTO ref_departement (nom_departement, code_departement, code_region) VALUES ("
+  req = paste (req,dbQuoteString(connexion,nom),",",dbQuoteString(connexion,code),",",dbQuoteString(connexion,codeRegion),")")
+  #print(req)
+  dbGetQuery(connexion, req)
+}
+insert_into_communes <-function (connexion,  code, nom, codePostal, codeDepartement){
+
+  req = "INSERT INTO ref_communes ( nom_commune, code_commune, code_departement, code_postal) VALUES ("
+  req = paste (req,dbQuoteString(connexion,nom),",",dbQuoteString(connexion,code),",",
+               dbQuoteString(connexion,codeDepartement),",",dbQuoteString(connexion,codePostal),")")
+  #print(req)
+  dbGetQuery(connexion, req)
+}
+
 # Alimentation de la base
 insert_into_poste <-function (connexion, id, code_rome, libelle_rome, appellation_libelle){
   query = "insert into poste (id_poste,code_rome, libelle_rome, appellation_libelle) values ("
@@ -38,11 +59,17 @@ insert_into_secteur_activite <-function (connexion,id,libelle_secteur, secteur_a
   execute_requete(connexion, query)
 }
 
-insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation, id_contrat, id_poste,id_localisation,id_experience,id_secteur, categorie){
+insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation, id_contrat, id_poste,id_experience,id_secteur, categorie, codeCommune){
   id_offre_emploi = id
-  query = "insert into Offre_emploi (intitule_offre, description_offre, categorie, date_creation,id_offre,id_localisation, id_contrat, id_poste, id_experience,id_secteur) values ("
+  query = "insert into Offre_emploi (intitule_offre, description_offre, categorie, date_creation,id_offre, id_contrat, id_poste, id_experience,id_secteur, codeCommune) values ("
   query = paste(query,dbQuoteString(connexion, intitule_offre),",",dbQuoteString(connexion,description_offre),",",dbQuoteString(connexion, categorie),",'",date_creation,"',",sep="")
-  query = paste(query,"'",id_offre_emploi,"','",id_localisation,"','",id_contrat,"','",id_poste,"','",id_experience,"','",id_secteur,"')",sep="")
+  query = paste(query,"'",id_offre_emploi,"','",id_contrat,"','",id_poste,"','",id_experience,"','",id_secteur,sep="")
+  cd= na_to_null(codeCommune);
+  if( cd=="NULL")
+    query = paste(query,"',NULL)", sep="")
+  else
+    query = paste(query, "','" , cd ,"')", sep="")
+  #print(query)
   execute_requete(connexion, query)
   
 }
@@ -90,14 +117,11 @@ get_poste<- function(connexion, code_rom){
 
 
 #Execution de la requete
-execute_requete <-function (connexion, query, nbrRow=0){
+execute_requete <-function (connexion, query){
   dbSendQuery(connexion,"SET NAMES utf8mb4;")
   dbSendQuery(connexion,"SET CHARACTER SET utf8mb4;")
   #print(query)
-  rs <- dbSendQuery(connexion, query)
-  data = dbFetch(rs, nbrRow)
-  dbClearResult(rs)
-  return (data)
+  return (dbGetQuery(connexion,query))
 }
 
 #
@@ -139,11 +163,11 @@ insert_data_int_bdd<- function (connexion,df){
       id_poste=id
     }
     
-    id_localisation = get_localisation(connexion= df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
-    if(is.na(id_localisation)){
-      insert_into_localisation(connexion,id,df[i,"lieuTravail.libelle"],df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
-      id_localisation=id
-    }
+    #id_localisation = get_localisation(connexion= df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
+    #if(is.na(id_localisation)){
+    #  insert_into_localisation(connexion,id,df[i,"lieuTravail.libelle"],df[i,"lieuTravail.longitude"], df[i,"lieuTravail.latitude"])
+    #  id_localisation=id
+    #}
     
     id_contrat = get_contrat(connexion, df[i,"typeContrat"], df[i,"typeContratLibelle"])
     if(is.na(id_contrat)){
@@ -163,7 +187,7 @@ insert_data_int_bdd<- function (connexion,df){
       insert_into_secteur_activite(mydb,id,df[i,"secteurActiviteLibelle"],df[i,"secteurActivite"])
       id_secteur=id
     }
-    insert_into_Offre_emploi (connexion,id,df[i,"intitule"],  df[i,"description"],df[i,"dateCreation"], id_contrat, id_poste,id_localisation,id_experience,id_secteur,df[i,"categorie"])
+    insert_into_Offre_emploi (connexion,id,df[i,"intitule"],  df[i,"description"],df[i,"dateCreation"], id_contrat, id_poste,id_experience,id_secteur,df[i,"categorie"], df[i,"lieuTravail.commune"])
   }
 }
 
@@ -196,16 +220,13 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   req=paste(req,");                                                            ")     
   execute_requete(connexion,req)
   
-  req=""
-  req=paste(req,"CREATE TABLE regions(")
-  req=paste(req," code_insee varchar(50),")
-  req=paste(req," nom_region varchar(50),")
-  req=paste(req," PRIMARY KEY (code_insee)")
-  req=paste(req,");")
-  execute_requete(connexion,req)
-
-  regions = read.csv("regions.csv",sep=";",encoding = "UTF-8")
-  dbWriteTable(connexion,name ="regions",regions,append=TRUE,overwrite=FALSE,row.names=FALSE)
+  #req=""
+  #req=paste(req,"CREATE TABLE regions(")
+  #req=paste(req," code_insee varchar(50),")
+  #req=paste(req," nom_region varchar(50),")
+  #req=paste(req," PRIMARY KEY (code_insee)")
+  #req=paste(req,");")
+  #execute_requete(connexion,req)
 
   # 
   # 
@@ -242,6 +263,44 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   # communes = read.csv("communes.csv")
   # dbWriteTable(connexion,name ="communes",communes,row.names=FALSE,append=FALSE,overwrite=TRUE)
   # 
+ 
+  req=""
+  req=paste(req,"CREATE TABLE ref_regions(                                  ")
+  req=paste(req,"  nom_region VARCHAR(100),                                 ")
+  req=paste(req,"  code_region VARCHAR(5),                                ")
+  req=paste(req,"  CONSTRAINT PK_ref_regions PRIMARY KEY (code_region)      ")
+  req=paste(req,");                                                         ")
+  execute_requete(connexion,req)
+  
+  req=""
+  req=paste(req,"CREATE TABLE ref_departement(                              ")
+  req=paste(req,"  nom_departement VARCHAR(100),                            ")
+  req=paste(req,"  code_departement VARCHAR(6),                             ")
+  req=paste(req,"  code_region VARCHAR(5),                                      ")
+  req=paste(req,"  CONSTRAINT PK_ref_departement PRIMARY KEY (code_departement), ")
+  req=paste(req,"  FOREIGN KEY fk_region  (code_region)                         ")
+  req=paste(req,"  REFERENCES ref_regions (code_region)                       ")
+  req=paste(req,");                                                             ")
+  execute_requete(connexion,req)
+  
+  req=""
+  req=paste(req,"CREATE TABLE ref_communes(  ")
+  req=paste(req,"  id_commune INT PRIMARY KEY NOT NULL AUTO_INCREMENT,                 ")
+  req=paste(req,"  nom_commune VARCHAR(100),                                   ")
+  req=paste(req,"  code_commune VARCHAR(6),                                     ")
+  req=paste(req,"  code_departement VARCHAR(5),                                 ")
+  req=paste(req,"  code_postal VARCHAR(5),                                     ")
+  req=paste(req,"  FOREIGN KEY fk_departements  (code_departement)              ")
+  req=paste(req,"  REFERENCES ref_departement (code_departement)                ")
+  req=paste(req,");                                                             ")
+  execute_requete(connexion,req)
+  
+  req="ALTER TABLE ref_communes ADD INDEX (code_postal)"
+  execute_requete(connexion,req)
+  req="ALTER TABLE ref_communes ADD INDEX (code_commune)"
+  execute_requete(connexion,req)
+  
+  
   req=""
   req=paste(req,"CREATE TABLE contrat(                                         ")
   req=paste(req,"  id_contrat VARCHAR(10),               ")
@@ -291,6 +350,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   req=paste(req,"  date_creation TEXT,                                         ") 
   req=paste(req,"  intitule_offre VARCHAR(300),                                ")
   req=paste(req,"  description_offre TEXT,                                     ")
+  req=paste(req,"  codeCommune varchar(5),                                     ")
   req=paste(req,"  CONSTRAINT PK_offre PRIMARY KEY (id_offre),                 ")
   req=paste(req,"  FOREIGN KEY (id_localisation)                               ")
   req=paste(req,"  REFERENCES localisation (id_localisation) ,                 ")
@@ -302,7 +362,10 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   req=paste(req,"  REFERENCES experience (id_experience)	,                    ")
   req=paste(req,"  FOREIGN KEY (id_secteur)                                    ")
   req=paste(req,"  REFERENCES secteur_activite (id_secteur)		                 ")
+  #req=paste(req,"  FOREIGN KEY  (codeCommune)                                    ")
+  #req=paste(req,"  REFERENCES ref_communes (code_commune)		                 ")
   req=paste(req,")                                                              ")
+  
   execute_requete(connexion,req)
   dbDisconnect(connexion)
 }
@@ -312,9 +375,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
 #CREATE INDEX idx1 ON t1 ((col1 + col2));
 
 
-# date_last_update<- function(connexion){
-#   date_last_update = fetch(
-#     dbSendQuery(connexion, "select max(date_creation) from offre_emploi"),
-#     n=1)
-#   return (date_last_update[[1]])
-# }
+ date_last_update<- function(connexion){
+   date_last_update=dbGetQuery(connexion, "select max(date_creation) from offre_emploi")
+   return (date_last_update[[1]])
+ }

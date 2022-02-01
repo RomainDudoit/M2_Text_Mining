@@ -8,8 +8,53 @@ Add_categorie <- function(df){
   return(df)
 }
 
-data_from_api_to_bdd<-function (connexion,mot_cle, token){
+#insertion régions
+mise_a_jour_regions<-function (connexion, token){
+  url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/regions"
+  request_data=GET(url,add_headers(Authorization = token))
+  data= fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)
+  for(i in 1:nrow(data)) {
+    insert_into_regions (connexion, data[i,"libelle"], data[i,"code"])
+  }
+}
+
+#insertion departements
+mise_a_jour_departement<-function (connexion,token){
+  url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/departements"
+  request_data=GET(url,add_headers(Authorization = token))
+  data = fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)
+  for(i in 1:nrow(data)) {
+    insert_into_departements (connexion, data[i,"libelle"], data[i,"code"], data[i,"region.code"] )
+  }
+}
+
+#insertion communes
+mise_a_jour_communes<-function (connexion, token){
+  url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/communes"
+  request_data=GET(url,add_headers(Authorization = token))
+  data = fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)
+  data = subset(data, !(codeDepartement %in% c("977","978","979","980","981","982","983","984",
+                                               "985","986","987","988","989","975","99")))
   
+  for(i in 1:nrow(data)) {
+      insert_into_communes (connexion,  data[i,"code"], data[i,"libelle"], 
+                            data[i,"codePostal"], data[i,"codeDepartement"])
+  }
+}
+
+get_date_from_url<- function(url){
+  r <- GET(url)
+  return (fromJSON( content(r, as="text")))
+}
+
+
+mise_a_jour_referentiel<-function (connexion, token){
+  mise_a_jour_regions(connexion,token)
+  mise_a_jour_departement(connexion,token)
+  mise_a_jour_communes(connexion,token)
+}
+
+data_from_api_to_bdd<-function (connexion,mot_cle, token){
 
   #preparer le parametrage
   mot_cle = str_replace_all(mot_cle," ","+")
