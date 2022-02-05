@@ -119,3 +119,5 @@ ON offre.id_poste = poste.id_poste
 group by poste.libelle_rome, offre.categorie;")
 
 dbDisconnect(mydb)
+
+tab = xtabs(nb ~ libelle_secteur + categorie, data = df_11)

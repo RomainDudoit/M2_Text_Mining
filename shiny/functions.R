@@ -82,8 +82,8 @@ Nettoyage_dfdescription_offre = function(dfdescription_offre){
   return(dfdescription_offre)
 }
 
-wordcloud_metier = function(metier){
-  df = df_desc_cat() %>% filter(categorie == metier)
+wordcloud_metier = function(metier,df1){
+  df = df1 %>% filter(categorie == metier)
 
   # Nettoyage
   df$description_offre = Nettoyage_dfdescription_offre(df$description_offre)
@@ -101,11 +101,13 @@ wordcloud_metier = function(metier){
 
   dico = as.data.frame(head(dico, input$nb))
   set.seed(0)
-  wordcloud(words = dico$word, freq = dico$n, color = brewer.pal(8, "Dark2"))
+  
+  plotly::ggplotly(wordcloud(words = dico$word, freq = dico$n, color = brewer.pal(8, "Dark2")))
+
 }
 
-top_competences_metier = function(metier){
-  df = df_desc_cat() %>% filter(categorie == metier)
+top_competences_metier = function(metier,df1){
+  df = df1 %>% filter(categorie == metier)
 
 
   # Nettoyage

@@ -1,0 +1,48 @@
+"","categorie","nom_region","nb"
+"1","DATA SCIENTIST","Hauts-de-France",6
+"2","DATA ANALYST","Hauts-de-France",54
+"3","DATA ANALYST","Ile-de-France",100
+"4","DATA SCIENTIST","Ile-de-France",43
+"5","DATA ENGINEER","Ile-de-France",33
+"6","DATA SCIENTIST","Guyane",1
+"7","DATA ANALYST","Nouvelle-Aquitaine",41
+"8","DATA ANALYST","Auvergne-Rhône-Alpes",34
+"9","DATA ENGINEER","Nouvelle-Aquitaine",16
+"10","DATA ENGINEER","Auvergne-Rhône-Alpes",7
+"11","DATA ENGINEER","Occitanie",69
+"12","DATA ANALYST","Occitanie",35
+"13","AUTRE","Ile-de-France",25
+"14","AUTRE",NA,13
+"15","AUTRE","Occitanie",14
+"16","DATA SCIENTIST","Provence-Alpes-Côte d'Azur",19
+"17","DATA ENGINEER","Pays de la Loire",8
+"18","DATA SCIENTIST","Auvergne-Rhône-Alpes",6
+"19","DATA ANALYST","La Réunion",5
+"20","DATA SCIENTIST","Occitanie",9
+"21","AUTRE","Pays de la Loire",1
+"22","AUTRE","Auvergne-Rhône-Alpes",7
+"23","DATA SCIENTIST",NA,40
+"24","AUTRE","Provence-Alpes-Côte d'Azur",8
+"25","DATA ANALYST","Grand Est",11
+"26","AUTRE","Normandie",3
+"27","DATA ANALYST","Centre-Val de Loire",12
+"28","DATA ENGINEER",NA,21
+"29","DATA ANALYST","Provence-Alpes-Côte d'Azur",39
+"30","DATA ANALYST",NA,38
+"31","DATA ANALYST","Pays de la Loire",12
+"32","DATA ANALYST","Bretagne",14
+"33","DATA SCIENTIST","Nouvelle-Aquitaine",8
+"34","DATA SCIENTIST","Centre-Val de Loire",9
+"35","DATA ENGINEER","Centre-Val de Loire",2
+"36","DATA SCIENTIST","Grand Est",2
+"37","DATA ANALYST","Normandie",2
+"38","AUTRE","Nouvelle-Aquitaine",2
+"39","DATA ENGINEER","Hauts-de-France",12
+"40","DATA ENGINEER","Normandie",1
+"41","DATA ANALYST","Bourgogne-Franche-Comté",2
+"42","AUTRE","Centre-Val de Loire",1
+"43","DATA ENGINEER","Provence-Alpes-Côte d'Azur",14
+"44","AUTRE","Hauts-de-France",7
+"45","DATA SCIENTIST","Pays de la Loire",2
+"46","DATA ENGINEER","Bretagne",1
+"47","DATA SCIENTIST","Bretagne",3
