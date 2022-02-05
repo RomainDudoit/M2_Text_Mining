@@ -7,26 +7,36 @@ library(plotly)
 ##################################################### Répartition des secteurs d'activité
 
 mydb=connect() # Ouverture de la connexion
-df1=dbGetQuery(
+df_11 = dbGetQuery(
   mydb,
   "SELECT offre.categorie, COUNT(*) as nb, secteur.libelle_secteur 
 FROM offre_emploi offre LEFT JOIN secteur_activite secteur
 ON offre.id_secteur = secteur.id_secteur
 GROUP BY offre.id_secteur;")
-Encoding(df1[["libelle_secteur"]]) = "UTF-8"
-
+Encoding(df_11[["libelle_secteur"]]) = "UTF-8"
 dbDisconnect(mydb)
 
-df1 = df1 %>% filter(libelle_secteur!="NR") %>% arrange(-nb) 
-df1 = head(df1,7)
+df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% arrange(-nb) 
+df_11 = head(df_11,7)
 
-fig <- plot_ly(df1, x = ~libelle_secteur, y = ~nb, type = 'bar')
+fig <- plot_ly(df_11, x = ~libelle_secteur, y = ~nb, type = 'bar')
 fig <- fig %>% layout(title = "Top 5 des secteurs d'activités",
                        xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE,title="Secteur d'activité"),
                        yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE,title="%"))
 
 fig
 
+plotlyOutput('plot_Stat_desc_1')
+output$plot_Stat_desc_1 <- renderPlotly({
+  df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% arrange(-nb) 
+  df_11 = head(df_11,7)
+  
+  fig <- plot_ly(df_11, x = ~libelle_secteur, y = ~nb, type = 'bar') %>%
+    layout(title = "Top 5 des secteurs d'activités",
+           xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE,title="Secteur d'activité"),
+           yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE,title="%"))
+  fig
+})
 
 ##################################################### Répartition des types de contrat (par catégorie)
 

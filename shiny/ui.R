@@ -55,6 +55,7 @@ ui = shinyUI(fluidPage(
                       tabName = "page4",
                       fluidRow(
                         column(12, h2("Analyse par secteur d'activité", align = "center")),
+                        column(12, plotlyOutput('plot_Stat_desc_1'))
                       )
                     ),
                     tabItem(

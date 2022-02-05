@@ -22,7 +22,6 @@ server = shinyServer(function(input, output) {
   print(head(dfEntreprise))
   
   # Liste des stopwords spécifiques 
-  
   stopwords_spe = c("data", "donnees", "donnee", "cadre", "profil", "formation", "science", "suivante", "suivantes",
                     "france", "chez", "minimum", "depuis", "jour", "departement", "asie", "pays",
                     "scientists", "scientist", "scientiste", "analyst", "analysts", "engineer", "engineers", "poste",
@@ -44,14 +43,7 @@ server = shinyServer(function(input, output) {
                     "outils","groupe","equipe","equipes","real","connaissance","connaissances","competence","competences","qualite","qualites",
                     "estate", "experience","capacite","capacites","necessaire","necessaires","forces","force","quotidien","services","service","etes") 
   
-  # Dataframe : Catégorie - Intitule - Description 
-  df_desc_cat <- reactive({
-    # df <- read.csv("df_textmining.csv", encoding = "latin1")
-    # df = df %>% select(-X)
-    df1
-  })
 
-  
   ############################################################################## Page 2
   
   #-----------------------------------------------------------------------------
@@ -94,9 +86,9 @@ server = shinyServer(function(input, output) {
     
     res = corpus %>% 
       unnest_tokens(output = word, input = desc) %>% 
-      filter(!word %in% Unaccent(stopwords("french"))) %>%  # Enlever les stopwords francais
-      filter(!word %in% stopwords_spe) %>%                  # Enlever les stopwords_spe
-      filter(!word %in% setdiff(letters, "r"))              # Enlever les lettres seules saufs "r"
+      filter(!word %in% Unaccent(stopwords("french"))) %>%    # Enlever les stopwords francais
+      filter(!word %in% c(stopwords_spe,listEntreprise)) %>%  # Enlever les stopwords_spe + listEntreprise
+      filter(!word %in% setdiff(letters, "r"))                # Enlever les lettres seules saufs "r"
     
     dico = res %>% count(word, sort = TRUE) %>% arrange(-n)
     
@@ -126,16 +118,25 @@ server = shinyServer(function(input, output) {
     
   })
   ############################################################################## Page 4
-  
-  # dfsecteur = dbGetQuery(
-  #   mydb, 
-  #   "SELECT COUNT(*) as, secteur.libelle_secteur 
-  #   FROM offre_emploi offre LEFT JOIN secteur_activite secteur
-  #   ON offre.id_secteur = secteur.id_secteur
-  #   GROUP BY offre.id_secteur;")
+  mydb=connect() # Ouverture de la connexion
+  df_11 = dbGetQuery(mydb,
+    "SELECT offre.categorie, COUNT(*) as nb, secteur.libelle_secteur 
+    FROM offre_emploi offre LEFT JOIN secteur_activite secteur
+    ON offre.id_secteur = secteur.id_secteur
+    GROUP BY offre.id_secteur;")
+  Encoding(df_11[["libelle_secteur"]]) = "UTF-8"
+  dbDisconnect(mydb)
 
-  date_last_update=DBI::dbGetQuery(connexion, "select max(date_creation) from offre_emploi")
-  
+  output$plot_Stat_desc_1 <- renderPlotly({
+    df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% arrange(-nb) 
+    df_11 = head(df_11,7)
+    
+    fig <- plot_ly(df_11, x = ~libelle_secteur, y = ~nb, type = 'bar') %>%
+      layout(title = "Top 5 des secteurs d'activités",
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE,title="Secteur d'activité"),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE,title="%"))
+    fig
+  })
   
   
 })
