@@ -1,0 +1,101 @@
+"categorie","nom_region","nom_departement","nb"
+"DATA SCIENTIST","Hauts-de-France","Nord",6
+"DATA ANALYST","Hauts-de-France","Nord",54
+"DATA ANALYST","Ile-de-France","Hauts-de-Seine",25
+"DATA SCIENTIST","Ile-de-France","Paris",17
+"DATA ANALYST","Ile-de-France","Paris",48
+"DATA ENGINEER","Ile-de-France","Seine-Saint-Denis",2
+"DATA SCIENTIST","Guyane","Guyane",1
+"DATA ANALYST","Nouvelle-Aquitaine","Gironde",38
+"DATA ANALYST","Auvergne-Rhône-Alpes","Haute-Savoie",7
+"DATA ENGINEER","Nouvelle-Aquitaine","Gironde",16
+"DATA ENGINEER","Auvergne-Rhône-Alpes","Rhône",3
+"DATA ENGINEER","Occitanie","Hérault",4
+"DATA ENGINEER","Ile-de-France","Hauts-de-Seine",20
+"DATA ANALYST","Occitanie","Hérault",9
+"AUTRE","Ile-de-France","Paris",8
+"AUTRE",NA,NA,13
+"AUTRE","Occitanie","Haute-Garonne",6
+"AUTRE","Occitanie","Hérault",8
+"DATA ANALYST","Occitanie","Haute-Garonne",25
+"DATA SCIENTIST","Ile-de-France","Val-de-Marne",2
+"DATA SCIENTIST","Provence-Alpes-Côte d'Azur","Alpes-Maritimes",14
+"DATA ENGINEER","Pays de la Loire","Loire-Atlantique",8
+"DATA SCIENTIST","Auvergne-Rhône-Alpes","Rhône",5
+"DATA ANALYST","La Réunion","La Réunion",5
+"DATA ANALYST","Occitanie","Ariège",1
+"AUTRE","Ile-de-France","Yvelines",2
+"DATA ANALYST","Ile-de-France","Essonne",13
+"AUTRE","Ile-de-France","Hauts-de-Seine",7
+"DATA SCIENTIST","Occitanie","Tarn-et-Garonne",2
+"DATA ENGINEER","Auvergne-Rhône-Alpes","Isère",4
+"DATA ANALYST","Auvergne-Rhône-Alpes","Rhône",16
+"AUTRE","Pays de la Loire","Mayenne",1
+"AUTRE","Ile-de-France","Val-de-Marne",1
+"DATA ANALYST","Ile-de-France","Val-d'Oise",1
+"DATA ANALYST","Auvergne-Rhône-Alpes","Isère",7
+"AUTRE","Auvergne-Rhône-Alpes","Rhône",5
+"DATA SCIENTIST",NA,NA,40
+"AUTRE","Provence-Alpes-Côte d'Azur","Var",3
+"DATA ANALYST","Grand Est","Aube",1
+"AUTRE","Normandie","Manche",1
+"DATA ENGINEER","Ile-de-France","Paris",7
+"DATA ANALYST","Centre-Val de Loire","Indre-et-Loire",12
+"DATA SCIENTIST","Auvergne-Rhône-Alpes","Ardèche",1
+"DATA ENGINEER","Occitanie","Haute-Garonne",65
+"DATA ENGINEER",NA,NA,21
+"AUTRE","Provence-Alpes-Côte d'Azur","Alpes-Maritimes",5
+"DATA ANALYST","Provence-Alpes-Côte d'Azur","Bouches-du-Rhône",22
+"DATA SCIENTIST","Ile-de-France","Hauts-de-Seine",10
+"DATA ANALYST",NA,NA,38
+"DATA SCIENTIST","Ile-de-France","Essonne",5
+"DATA ANALYST","Pays de la Loire","Maine-et-Loire",6
+"DATA ANALYST","Bretagne","Finistère",1
+"DATA ANALYST","Bretagne","Ille-et-Vilaine",12
+"DATA ANALYST","Bretagne","Morbihan",1
+"DATA ANALYST","Ile-de-France","Val-de-Marne",5
+"DATA ANALYST","Ile-de-France","Seine-et-Marne",4
+"DATA ANALYST","Pays de la Loire","Loire-Atlantique",6
+"DATA ANALYST","Nouvelle-Aquitaine","Haute-Vienne",1
+"DATA SCIENTIST","Occitanie","Haute-Garonne",7
+"DATA ANALYST","Auvergne-Rhône-Alpes","Loire",4
+"DATA SCIENTIST","Ile-de-France","Yvelines",2
+"DATA ANALYST","Ile-de-France","Yvelines",3
+"DATA SCIENTIST","Ile-de-France","Seine-et-Marne",2
+"DATA SCIENTIST","Nouvelle-Aquitaine","Lot-et-Garonne",1
+"DATA ANALYST","Ile-de-France","Seine-Saint-Denis",1
+"DATA SCIENTIST","Centre-Val de Loire","Indre-et-Loire",9
+"DATA ENGINEER","Centre-Val de Loire","Loiret",2
+"DATA SCIENTIST","Grand Est","Haut-Rhin",2
+"AUTRE","Auvergne-Rhône-Alpes","Isère",1
+"DATA ANALYST","Normandie","Seine-Maritime",1
+"AUTRE","Nouvelle-Aquitaine","Deux-Sèvres",2
+"DATA ANALYST","Grand Est","Moselle",6
+"AUTRE","Ile-de-France","Essonne",3
+"DATA ANALYST","Nouvelle-Aquitaine","Deux-Sèvres",2
+"DATA ENGINEER","Hauts-de-France","Nord",12
+"DATA ANALYST","Grand Est","Marne",1
+"DATA SCIENTIST","Nouvelle-Aquitaine","Pyrénées-Atlantiques",1
+"AUTRE","Auvergne-Rhône-Alpes","Loire",1
+"DATA ENGINEER","Ile-de-France","Val-de-Marne",2
+"DATA SCIENTIST","Ile-de-France","Seine-Saint-Denis",3
+"DATA ANALYST","Provence-Alpes-Côte d'Azur","Alpes-Maritimes",17
+"DATA ENGINEER","Normandie","Seine-Maritime",1
+"DATA SCIENTIST","Nouvelle-Aquitaine","Gironde",5
+"DATA ANALYST","Bourgogne-Franche-Comté","Doubs",2
+"AUTRE","Centre-Val de Loire","Loir-et-Cher",1
+"DATA ENGINEER","Provence-Alpes-Côte d'Azur","Alpes-Maritimes",1
+"AUTRE","Hauts-de-France","Nord",6
+"DATA ENGINEER","Ile-de-France","Essonne",2
+"AUTRE","Ile-de-France","Seine-Saint-Denis",4
+"AUTRE","Normandie","Seine-Maritime",2
+"DATA SCIENTIST","Ile-de-France","Val-d'Oise",2
+"DATA SCIENTIST","Pays de la Loire","Sarthe",2
+"DATA ENGINEER","Provence-Alpes-Côte d'Azur","Bouches-du-Rhône",13
+"DATA ENGINEER","Bretagne","Finistère",1
+"DATA ANALYST","Normandie","Calvados",1
+"DATA SCIENTIST","Bretagne","Ille-et-Vilaine",3
+"DATA SCIENTIST","Nouvelle-Aquitaine","Charente-Maritime",1
+"AUTRE","Hauts-de-France","Pas-de-Calais",1
+"DATA ANALYST","Grand Est","Bas-Rhin",3
+"DATA SCIENTIST","Provence-Alpes-Côte d'Azur","Bouches-du-Rhône",5

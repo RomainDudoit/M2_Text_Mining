@@ -6,6 +6,13 @@ server = shinyServer(function(input, output) {
   # A executer une seule fois :
   # reset_baseb_donnes()
   
+  mydb=connect() # Ouverture de la connexion
+  df1 = dbFetch(dbSendQuery(mydb,"SELECT categorie, intitule_offre, description_offre from offre_emploi;"))
+  Encoding(df1[["intitule_offre"]]) = "UTF-8"
+  Encoding(df1[["description_offre"]]) = "UTF-8"
+  df1 <- df1[df1$categorie!="AUTRE",]
+  dbDisconnect(mydb)
+  
   connect<-function(user='root', password='root', dbname='textmining', host='127.0.0.1', port=3306){
     mydb = RMySQL::dbConnect(MySQL(), user=user, password=password, dbname=dbname, host=host, port=port, encoding = "utf8mb4")
     return (mydb)
@@ -134,18 +141,13 @@ server = shinyServer(function(input, output) {
     dico_bis = dico[dico$word %in% input$competences,]
     dico_bis$Freq = round((dico_bis$n/sum(dico_bis$n))*100, 2)
     
-    dico_bis = dico_bis %>% select(-n)
+    dico_bis = dico_bis %>% dplyr::select(-n)
     colnames(dico_bis) = c("Compétences", "Fréquence d'apparition (en %)")
     
     head(dico_bis, input$top)
   }
   
-  mydb=connect() # Ouverture de la connexion
-  df1 = dbFetch(dbSendQuery(mydb,"SELECT categorie, intitule_offre, description_offre from offre_emploi;"))
-  Encoding(df1[["intitule_offre"]]) = "UTF-8"
-  Encoding(df1[["description_offre"]]) = "UTF-8"
-  df1 <- df1[df1$categorie!="AUTRE",]
-  dbDisconnect(mydb)
+
   
   mydb=connect()
   dfEntreprise <- dbFetch(dbSendQuery(mydb,"SELECT DISTINCT nom_entreprise from offre_emploi;"))
@@ -243,7 +245,7 @@ server = shinyServer(function(input, output) {
     # Construction de la table de contingence 
     contingence = aggregate.data.frame(x = mtd_filtre, by = list(df$categorie), sum)
     rownames(contingence) = contingence$Group.1
-    contingence = contingence %>% select(-Group.1)
+    contingence = contingence %>% dplyr::select(-Group.1)
     contingence = contingence[, colnames(contingence) %in% input$competences]
     
     # calcul de l'AFC
