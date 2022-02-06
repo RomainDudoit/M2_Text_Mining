@@ -3,6 +3,18 @@ server = shinyServer(function(input, output) {
   # A executer une seule fois :
   # reset_baseb_donnes()
   
+  #Mise à jour des données
+  observeEvent(input$maj, {
+    token=get_token()
+    mydb=connect()
+    maj=date_last_update(mydb)
+    #recupreation des mots cles de l'api 
+    for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
+      df= data_from_api_to_bdd(mydb,motcle,token, maj)
+    print("fin update ")
+    dbDisconnect(mydb)
+  })
+  
   connect<-function(user='root', password='root', dbname='textmining', host='127.0.0.1', port=3306){
     mydb = RMySQL::dbConnect(MySQL(), user=user, password=password, dbname=dbname, host=host, port=port, encoding = "utf8mb4")
     return (mydb)
