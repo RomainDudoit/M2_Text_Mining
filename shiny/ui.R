@@ -7,11 +7,11 @@ ui = shinyUI(fluidPage(
                 dashboardSidebar(width = 300,
                                  actionButton("maj", "Mise à jour de la base de données"),
                                  sidebarMenu(
-                                   menuItem("Connexion à l'API", tabName = "page1"),
+                                   #menuItem("Connexion à l'API", tabName = "page1"),
                                    menuItem("Analyse par métier", tabName = "page2"),
                                    menuItem("Analyse des compétences", tabName = "page3"),
-                                   menuItem("Statistiques descriptives", tabName = "page4"),
-                                   menuItem("Cartographie des offres", tabName = "page5")
+                                   menuItem("Statistiques descriptives", tabName = "page4")
+                                   #menuItem("Cartographie des offres", tabName = "page5")
                                  )
                 ),
                 dashboardBody(
@@ -48,12 +48,11 @@ ui = shinyUI(fluidPage(
                               column(4, h4("DATA ANALYST"), dataTableOutput("top_competences_DATA_ANALYST")),
                               column(4, h4("DATA SCIENTIST"), dataTableOutput("top_competences_DATA_SCIENTIST")),
                               column(4, h4("DATA ENGINEER"), dataTableOutput("top_competences_DATA_ENGINEER")),
-                              column(12, h2("Analyse Factorielle des Correspondances", align = "center")),
+                              column(12, h2("Comparaison par metier", align = "center")),
                               column(12, plotOutput("afc_plot"))
                               
                             )),
-                    tabItem(
-                      tabName = "page4",
+                    tabItem(tabName = "page4",
                       fluidRow(
                         column(12, h2("Statistiques descriptives par métier", align = "center")),
                         column(12, checkboxGroupInput("metier_stat", "Métiers à analyser :",
@@ -63,19 +62,12 @@ ui = shinyUI(fluidPage(
                         column(4, valueBoxOutput("value1")),
                         column(4, valueBoxOutput("value2")),
                         column(4, valueBoxOutput("value3")),
+                        column(12, sliderInput("Top_secteur", "Top des secteurs d'activité :", min = 5, max = 100, value = 20)),
                         column(8, dataTableOutput('plot_Stat_desc_1')),
                         column(4, plotlyOutput('plot_carto')),
                         column(6, plotlyOutput('plot_Stat_desc_2')),
                         column(6, plotlyOutput('plot_Stat_desc_3')),
                       )
-                    ),
-                    tabItem(
-                      tabName = "page5",
-                      fluidRow(
-                        column(12, h2("Cartographie", align = "center")),
-                        #column(12, plotlyOutput('plot_carto'))
-                      )
-                      
                     )
                   )
                 )

@@ -1,7 +1,4 @@
 
-#eval(parse("functions.R", encoding="UTF-8"))
-
-
 server = shinyServer(function(input, output) {
   # A executer une seule fois :
   # reset_baseb_donnes()
@@ -21,7 +18,6 @@ server = shinyServer(function(input, output) {
   
   Nettoyage_dfdescription_offre = function(dfdescription_offre){
     # Nettoyage
-    #dfdescription_offre = Unaccent(dfdescription_offre)
     dfdescription_offre = str_to_lower(dfdescription_offre)
     dfdescription_offre = chartr("àâäéèêëïîôöùûüÿç", "aaaeeeeiioouuuyc", dfdescription_offre)
     dfdescription_offre  <- gsub("\n"," ",dfdescription_offre)
@@ -29,7 +25,6 @@ server = shinyServer(function(input, output) {
     dfdescription_offre  <- gsub("[[:punct:]]"," ",dfdescription_offre)
     
     # Correction orthographique & Concatenation mots
-    
     dfdescription_offre  <- gsub("model[[:alnum:]]*( )","modele ",dfdescription_offre)
     
     dfdescription_offre  <- gsub("developp[[:alnum:]]*( )","developpement ",dfdescription_offre)
@@ -86,7 +81,6 @@ server = shinyServer(function(input, output) {
     dfdescription_offre  <- gsub(" informations "," information ",dfdescription_offre)
     dfdescription_offre  <- gsub(" resultats "," resultat ",dfdescription_offre)
     
-    #dfdescription_offre  <- gsub(" missions "," resultat ",dfdescription_offre)
     return(dfdescription_offre)
   }
   
@@ -124,9 +118,9 @@ server = shinyServer(function(input, output) {
     
     res = corpus %>%
       unnest_tokens(output = word, input = desc) %>%
-      filter(!word %in% Unaccent(stopwords("french"))) %>%  # Enlever les stopwords francais
-      filter(!word %in% c(stopwords_spe,listEntreprise)) %>%
-      filter(!word %in% setdiff(letters, "r"))              # Enlever les lettres seules saufs "r"
+      filter(!word %in% Unaccent(stopwords("french"))) %>%    # Enlever les stopwords francais
+      filter(!word %in% c(stopwords_spe,listEntreprise)) %>%  # Enlever les stopwords et les noms des entreprises
+      filter(!word %in% setdiff(letters, "r"))                # Enlever les lettres seules sauf "r"
     
     dico = res %>% count(word, sort = TRUE) %>% arrange(-n)
     
@@ -178,11 +172,7 @@ server = shinyServer(function(input, output) {
                     "estate", "experience","capacite","capacites","necessaire","necessaires","forces","force","quotidien","services","service","etes") 
   
 
-  ############################################################################## Page 2
-  
-  #-----------------------------------------------------------------------------
-  # Wordcloud par metier
-  #-----------------------------------------------------------------------------
+  ############################################################################## Page 2 - Analyse par métier (Wordcloud)
   output$wordcloud_DATA_ANALYST <- renderPlot({
     wordcloud_metier(metier = "DATA ANALYST",df1)
   })
@@ -194,7 +184,7 @@ server = shinyServer(function(input, output) {
   output$wordcloud_DATA_ENGINEER <- renderPlot({
     wordcloud_metier(metier = "DATA ENGINEER",df1)
   })
-  ############################################################################## Page 3
+  ############################################################################## Page 3 - Analyse des compétences
   
   output$top_competences_DATA_ANALYST <- renderDataTable({
     top_competences_metier(metier = "DATA ANALYST",df1)
@@ -222,17 +212,15 @@ server = shinyServer(function(input, output) {
       unnest_tokens(output = word, input = desc) %>% 
       filter(!word %in% Unaccent(stopwords("french"))) %>%    # Enlever les stopwords francais
       filter(!word %in% c(stopwords_spe,listEntreprise)) %>%  # Enlever les stopwords_spe + listEntreprise
-      filter(!word %in% setdiff(letters, "r"))                # Enlever les lettres seules saufs "r"
+      filter(!word %in% setdiff(letters, "r"))                # Enlever les lettres seules sauf "r"
     
     dico = res %>% count(word, sort = TRUE) %>% arrange(-n)
     
     # Comptage des termes par document
-    compte = res %>% 
-      group_by(line, word) %>% 
-      summarize(freq=n())
+    compte = res %>% group_by(line, word) %>% summarize(freq=n())
     
     # Matrice termes documents 
-    mtd = as.matrix(compte %>%  cast_dtm(document = line, term = word, value = freq))
+    mtd = as.matrix(compte %>% cast_dtm(document = line, term = word, value = freq))
     app_termes = apply(mtd, 2, function(x){sum(x>1)})
     mtd_filtre = as.data.frame(mtd[,app_termes > 10])
     
@@ -242,16 +230,28 @@ server = shinyServer(function(input, output) {
     contingence = contingence %>% dplyr::select(-Group.1)
     contingence = contingence[, colnames(contingence) %in% input$competences]
     
-    # calcul de l'AFC
+    # Calcul de l'AFC + Affichage graphique
     res.ca <- CA(contingence, graph = FALSE) 
-    
-    # Graphique AFC
     fviz_ca_biplot (res.ca, repel = TRUE, title	= "Analyse Factorielle des Correspondances")
-    
   })
-  ############################################################################## Page 4
-
-  mydb=connect() # Ouverture de la connexion
+  ############################################################################## Page 4 - Statistiques descriptives par métier
+  
+  # Affichage du nombre d'offre par catégorie
+  output$value1 <- renderValueBox({
+    valueBox(table(df$categorie)["DATA ANALYST"], title = toupper("DATA ANALYST"),subtitle = "offres", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    #valueBox(table(df$categorie)["DATA ANALYST"], "Nombre d'offres DATA ANALYST :", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    })
+  
+  output$value2 <- renderValueBox({
+    valueBox(table(df$categorie)["DATA SCIENTIST"], title = toupper("DATA SCIENTIST"),subtitle = "offres", icon = icon("stats",lib='glyphicon'), color = "aqua")
+  })
+  
+  output$value3 <- renderValueBox({
+    valueBox(table(df$categorie)["DATA ENGINEER"], title = toupper("DATA ENGINEER"),subtitle = "offres", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    })
+  
+  # Dataframe df_11 : Nombre d'offre par secteur d'activité et catégorie 
+  mydb=connect() 
   df_11 = dbGetQuery(mydb,
     "SELECT offre.categorie, COUNT(*) as nb, secteur.libelle_secteur 
     FROM offre_emploi offre LEFT JOIN secteur_activite secteur
@@ -260,26 +260,15 @@ server = shinyServer(function(input, output) {
   Encoding(df_11[["libelle_secteur"]]) = "UTF-8"
   dbDisconnect(mydb)
   
-  output$value1 <- renderValueBox({
-    valueBox(nrow(df1 %>% filter(categorie == "DATA ANALYST")), "Offres 'DATA ANALYST' :", icon = icon("stats",lib='glyphicon'), color = "aqua")
-  })
-  output$value2 <- renderValueBox({
-    valueBox(nrow(df1 %>% filter(categorie == "DATA SCIENTIST")), "Offres 'DATA SCIENTIST' :", icon = icon("stats",lib='glyphicon'), color = "aqua")
-  })
-  output$value3 <- renderValueBox({
-    valueBox(nrow(df1 %>% filter(categorie == "DATA ENGINEER")), "Offres 'DATA ENGINEER' :", icon = icon("stats",lib='glyphicon'), color = "aqua")
-  })
-  
-  
   output$plot_Stat_desc_1 <- renderDataTable({
     df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% filter(categorie %in% input$metier_stat) %>% arrange(-nb) 
-    df_11 = head(df_11,7)
+    df_11 = head(df_11,input$Top_secteur)
+    colnames(df_11) = c("Métier", "Nombre d'offres", "Secteur d'activité")
   }, options = list(searching = FALSE, paging = FALSE))
   
-
-  mydb=connect() # Ouverture de la connexion
-  df_12=dbGetQuery(
-    mydb,
+  # Dataframe df_12 : Nombre d'offre par type de contrat (CDI, CDD etc.) et catégorie 
+  mydb=connect() 
+  df_12=dbGetQuery(mydb,
     "SELECT offre.categorie, COUNT(*) as nb, contrat.type_contrat
     FROM offre_emploi offre LEFT JOIN contrat
     ON offre.id_contrat = contrat.id_contrat
@@ -294,9 +283,9 @@ server = shinyServer(function(input, output) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  mydb=connect() # Ouverture de la connexion
-  df_13=dbGetQuery(
-    mydb,
+  # Dataframe df_13 : Nombre d'offre par expérience exigée et catégorie 
+  mydb=connect() 
+  df_13=dbGetQuery(mydb,
     "SELECT offre.categorie, COUNT(*) as nb, experience.experience_exigee
     FROM offre_emploi offre LEFT JOIN experience
     ON offre.id_experience = experience.id_experience
@@ -306,7 +295,6 @@ server = shinyServer(function(input, output) {
   df_13$experience_exigee <- as.factor(df_13$experience_exigee)
   levels(df_13$experience_exigee) <- c("Débutant", "Exgigée", "Souhaitée")
   
-  
   output$plot_Stat_desc_3 <- renderPlotly({
     df_13 = df_13 %>% filter(categorie %in% input$metier_stat) # Filtre
     fig <- plot_ly(df_13, labels = ~experience_exigee, values = ~nb, type = 'pie') %>%
@@ -315,29 +303,26 @@ server = shinyServer(function(input, output) {
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
   
-  
-  ############################################################################## Page 5
-  mydb=connect() # Ouverture de la connexion
-  df_carto=dbGetQuery(
-    mydb,
+  # Dataframe df_carto : Nombre d'offre par département et catégorie 
+  mydb=connect() 
+  df_carto=dbGetQuery(mydb,
     "select offre_emploi.categorie, ref_regions.nom_region, ref_departement.nom_departement, Count(*) as nb
-  from ref_regions
-  RIGHT JOIN ref_departement on ref_regions.code_region = ref_departement.code_region
-  RIGHT join ref_communes on ref_departement.code_departement = ref_communes.code_departement
-  RIGHT JOIN offre_emploi on offre_emploi.codeCommune = ref_communes.code_commune
-  group by ref_departement.code_departement, offre_emploi.categorie;")
+    from ref_regions
+    RIGHT JOIN ref_departement on ref_regions.code_region = ref_departement.code_region
+    RIGHT join ref_communes on ref_departement.code_departement = ref_communes.code_departement
+    RIGHT JOIN offre_emploi on offre_emploi.codeCommune = ref_communes.code_commune
+    group by ref_departement.code_departement, offre_emploi.categorie;")
+  dbDisconnect(mydb)
+  
   Encoding(df_carto[["nom_region"]]) = "UTF-8"
   Encoding(df_carto[["nom_departement"]]) = "UTF-8"
-  dbDisconnect(mydb)
   
   output$plot_carto <- renderPlotly({
     df_carto = df_carto %>% filter(categorie %in% input$metier_stat) # Filtre
     
-    france <- map_data("france")
-    head(france)
-    var <- data.frame(freq=tapply(df_carto$nb, df_carto$nom_departement, sum)) # using rows as a dummy variable
+    france <- map_data("france") 
+    var <- data.frame(freq=tapply(df_carto$nb, df_carto$nom_departement, sum)) 
     var$var1 <- row.names(var)
-    head(var)
     france$variable <- var$freq[match(france$region,var$var1)]
     france$variable[is.na(france$variable)] <- 0
     ggplot(france, aes(x=long, y=lat)) +
