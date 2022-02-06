@@ -63,16 +63,17 @@ ui = shinyUI(fluidPage(
                         column(4, valueBoxOutput("value1")),
                         column(4, valueBoxOutput("value2")),
                         column(4, valueBoxOutput("value3")),
-                        column(12, dataTableOutput('plot_Stat_desc_1')),
+                        column(8, dataTableOutput('plot_Stat_desc_1')),
+                        column(4, plotlyOutput('plot_carto')),
                         column(6, plotlyOutput('plot_Stat_desc_2')),
-                        column(6, plotlyOutput('plot_Stat_desc_3'))
+                        column(6, plotlyOutput('plot_Stat_desc_3')),
                       )
                     ),
                     tabItem(
                       tabName = "page5",
                       fluidRow(
                         column(12, h2("Cartographie", align = "center")),
-                        column(12, plotlyOutput('plot_carto'))
+                        #column(12, plotlyOutput('plot_carto'))
                       )
                       
                     )

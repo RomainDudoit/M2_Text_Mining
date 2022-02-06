@@ -6,13 +6,6 @@ server = shinyServer(function(input, output) {
   # A executer une seule fois :
   # reset_baseb_donnes()
   
-  mydb=connect() # Ouverture de la connexion
-  df1 = dbFetch(dbSendQuery(mydb,"SELECT categorie, intitule_offre, description_offre from offre_emploi;"))
-  Encoding(df1[["intitule_offre"]]) = "UTF-8"
-  Encoding(df1[["description_offre"]]) = "UTF-8"
-  df1 <- df1[df1$categorie!="AUTRE",]
-  dbDisconnect(mydb)
-  
   connect<-function(user='root', password='root', dbname='textmining', host='127.0.0.1', port=3306){
     mydb = RMySQL::dbConnect(MySQL(), user=user, password=password, dbname=dbname, host=host, port=port, encoding = "utf8mb4")
     return (mydb)
@@ -146,7 +139,13 @@ server = shinyServer(function(input, output) {
     head(dico_bis, input$top)
   }
   
-
+  
+  mydb=connect() # Ouverture de la connexion
+  df1 = dbFetch(dbSendQuery(mydb,"SELECT categorie, intitule_offre, description_offre from offre_emploi;"))
+  Encoding(df1[["intitule_offre"]]) = "UTF-8"
+  Encoding(df1[["description_offre"]]) = "UTF-8"
+  df1 <- df1[df1$categorie!="AUTRE",]
+  dbDisconnect(mydb)
   
   mydb=connect()
   dfEntreprise <- dbFetch(dbSendQuery(mydb,"SELECT DISTINCT nom_entreprise from offre_emploi;"))
