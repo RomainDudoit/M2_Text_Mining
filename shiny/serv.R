@@ -155,7 +155,7 @@ server = shinyServer(function(input, output) {
                     "scientists", "scientist", "scientiste", "analyst", "analysts", "engineer", "engineers", "poste",
                     "descriptif", "description", "remuneration", "eur", "ans","recrutement", "salaire",
                     "recherchons", "recherche", "rejoignez", "secteur", "reference", "recrute", "venez",
-                    "bnp", "paribas", "fffd", "carrefour", # Ajouter les noms d'entreprises
+                    "bnp", "paribas", "fffd", "carrefour","viseo",
                     "selon", "alors", "autour", "avant","numero", "toute",
                     "etre", "bac", "cdi", "cdd", "travaille", "notamment", "type", "egalement",
                     "quoi","vue", "fr", "bien", "different", "differents",
@@ -238,16 +238,15 @@ server = shinyServer(function(input, output) {
   
   # Affichage du nombre d'offre par catégorie
   output$value1 <- renderValueBox({
-    valueBox(table(df$categorie)["DATA ANALYST"], title = "DATA ANALYST", icon = icon("stats",lib='glyphicon'), color = "aqua")
-    #valueBox(table(df$categorie)["DATA ANALYST"], "Nombre d'offres DATA ANALYST :", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    valueBox(table(df1$categorie)["DATA ANALYST"], "DATA ANALYST", icon = icon("stats",lib='glyphicon'), color = "green")
     })
   
   output$value2 <- renderValueBox({
-    valueBox(table(df$categorie)["DATA SCIENTIST"], title = "DATA SCIENTIST", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    valueBox(table(df1$categorie)["DATA SCIENTIST"], "DATA SCIENTIST", icon = icon("stats",lib='glyphicon'), color = "blue")
   })
   
   output$value3 <- renderValueBox({
-    valueBox(table(df$categorie)["DATA ENGINEER"], title = "DATA ENGINEER", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    valueBox(table(df1$categorie)["DATA ENGINEER"], "DATA ENGINEER", icon = icon("stats",lib='glyphicon'), color = "red")
     })
   
   # Dataframe df_11 : Nombre d'offre par secteur d'activité et catégorie 
@@ -262,8 +261,8 @@ server = shinyServer(function(input, output) {
   
   output$plot_Stat_desc_1 <- renderDataTable({
     df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% filter(categorie %in% input$metier_stat) %>% arrange(-nb) 
-    df_11 = head(df_11,input$Top_secteur)
     colnames(df_11) = c("Métier", "Nombre d'offres", "Secteur d'activité")
+    df_11 = head(df_11,input$Top_secteur)
   }, options = list(searching = FALSE, paging = FALSE))
   
   # Dataframe df_12 : Nombre d'offre par type de contrat (CDI, CDD etc.) et catégorie 
@@ -278,7 +277,7 @@ server = shinyServer(function(input, output) {
   output$plot_Stat_desc_2 <- renderPlotly({
     df_12 = df_12 %>% filter(categorie %in% input$metier_stat) # Filtre
     fig <- plot_ly(df_12, labels = ~type_contrat, values = ~nb, type = 'pie') %>%
-      layout(title = "Répartition des types de contrat (par catégorie)",
+      layout(
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
@@ -298,7 +297,7 @@ server = shinyServer(function(input, output) {
   output$plot_Stat_desc_3 <- renderPlotly({
     df_13 = df_13 %>% filter(categorie %in% input$metier_stat) # Filtre
     fig <- plot_ly(df_13, labels = ~experience_exigee, values = ~nb, type = 'pie') %>%
-      layout(title = "Répartition des expériences exigées par catégorie",
+      layout(
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
@@ -324,7 +323,7 @@ server = shinyServer(function(input, output) {
     var <- data.frame(freq=tapply(df_carto$nb, df_carto$nom_departement, sum)) 
     var$var1 <- row.names(var)
     france$variable <- var$freq[match(france$region,var$var1)]
-    france$variable[is.na(france$variable)] <- 0
+    #france$variable[is.na(france$variable)] <- 0
     ggplot(france, aes(x=long, y=lat)) +
       geom_polygon(aes(group=group, fill=variable), col="black",lwd=0) +
       #scale_fill_brewer(palette = "Set2")

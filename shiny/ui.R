@@ -26,11 +26,11 @@ ui = shinyUI(fluidPage(
                     tabItem(tabName = "page2", 
                             #titlePanel("Analyse par métier"),
                             fluidRow(
-                              column(12, h2("Analyse par métier", align = "center")),
+                              column(12, h1("Analyse par métier", align = "center")),
                               column(12, sliderInput("nb", "Nombre de mots:", min = 5, max = 100, value = 20)),
-                              column(4, h4("DATA ANALYST"), plotOutput("wordcloud_DATA_ANALYST")),
-                              column(4, h4("DATA SCIENTIST"), plotOutput("wordcloud_DATA_SCIENTIST")),
-                              column(4, h4("DATA ENGINEER"), plotOutput("wordcloud_DATA_ENGINEER"))
+                              column(4, h3("DATA ANALYST",align="center"), plotOutput("wordcloud_DATA_ANALYST")),
+                              column(4, h3("DATA SCIENTIST",align="center"), plotOutput("wordcloud_DATA_SCIENTIST")),
+                              column(4, h3("DATA ENGINEER",align="center"), plotOutput("wordcloud_DATA_ENGINEER"))
                             )),
                     tabItem(tabName = "page3",
                             fluidRow(
@@ -54,19 +54,18 @@ ui = shinyUI(fluidPage(
                             )),
                     tabItem(tabName = "page4",
                       fluidRow(
-                        column(12, h2("Statistiques descriptives par métier", align = "center")),
+                        column(12, h1("Statistiques descriptives par métier", align = "center")),
+                        br(),br(),
+                        column(12, valueBoxOutput("value1"),valueBoxOutput("value2"),valueBoxOutput("value3")),
                         column(12, checkboxGroupInput("metier_stat", "Métiers à analyser :",
                                                       choices = c("DATA ANALYST","DATA SCIENTIST","DATA ENGINEER"), 
                                                       selected = c("DATA ANALYST","DATA SCIENTIST","DATA ENGINEER"),
                                                       inline = TRUE)),
-                        column(4, valueBoxOutput("value1")),
-                        column(4, valueBoxOutput("value2")),
-                        column(4, valueBoxOutput("value3")),
-                        column(12, sliderInput("Top_secteur", "Top des secteurs d'activité :", min = 5, max = 100, value = 20)),
-                        column(8, dataTableOutput('plot_Stat_desc_1')),
-                        column(4, plotlyOutput('plot_carto')),
-                        column(6, plotlyOutput('plot_Stat_desc_2')),
-                        column(6, plotlyOutput('plot_Stat_desc_3')),
+                        column(12, sliderInput("Top_secteur", "Top des secteurs d'activité :", min = 1, max = 20, value = 5)),
+                        column(8, h3("Nombre d'offres par secteur d'activité",align="center"), dataTableOutput('plot_Stat_desc_1')),
+                        column(4, h3("Cartographie des offres par département",align="center"),plotlyOutput('plot_carto')),
+                        column(6, h3("Répartition des types de contrat",align="center"), plotlyOutput('plot_Stat_desc_2')),
+                        column(6, h3("Répartition des expériences exigées",align="center"), plotlyOutput('plot_Stat_desc_3')),
                       )
                     )
                   )
