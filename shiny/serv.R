@@ -238,16 +238,16 @@ server = shinyServer(function(input, output) {
   
   # Affichage du nombre d'offre par catégorie
   output$value1 <- renderValueBox({
-    valueBox(table(df$categorie)["DATA ANALYST"], title = toupper("DATA ANALYST"),subtitle = "offres", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    valueBox(table(df$categorie)["DATA ANALYST"], title = "DATA ANALYST", icon = icon("stats",lib='glyphicon'), color = "aqua")
     #valueBox(table(df$categorie)["DATA ANALYST"], "Nombre d'offres DATA ANALYST :", icon = icon("stats",lib='glyphicon'), color = "aqua")
     })
   
   output$value2 <- renderValueBox({
-    valueBox(table(df$categorie)["DATA SCIENTIST"], title = toupper("DATA SCIENTIST"),subtitle = "offres", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    valueBox(table(df$categorie)["DATA SCIENTIST"], title = "DATA SCIENTIST", icon = icon("stats",lib='glyphicon'), color = "aqua")
   })
   
   output$value3 <- renderValueBox({
-    valueBox(table(df$categorie)["DATA ENGINEER"], title = toupper("DATA ENGINEER"),subtitle = "offres", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    valueBox(table(df$categorie)["DATA ENGINEER"], title = "DATA ENGINEER", icon = icon("stats",lib='glyphicon'), color = "aqua")
     })
   
   # Dataframe df_11 : Nombre d'offre par secteur d'activité et catégorie 
