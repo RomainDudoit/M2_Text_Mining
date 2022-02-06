@@ -8,7 +8,7 @@ ui = shinyUI(fluidPage(
                                  actionButton("maj", "Mise à jour de la base de données"),
                                  sidebarMenu(
                                    #menuItem("Connexion à l'API", tabName = "page1"),
-                                   menuItem("Analyse par métier", tabName = "page2"),
+                                   menuItem("Analyse des offres", tabName = "page2"),
                                    menuItem("Analyse des compétences", tabName = "page3"),
                                    menuItem("Statistiques descriptives", tabName = "page4")
                                    #menuItem("Cartographie des offres", tabName = "page5")
@@ -26,7 +26,7 @@ ui = shinyUI(fluidPage(
                     tabItem(tabName = "page2", 
                             #titlePanel("Analyse par métier"),
                             fluidRow(
-                              column(12, h1("Analyse par métier", align = "center")),
+                              column(12, h1("Analyse des offres", align = "center")),
                               column(12, sliderInput("nb", "Nombre de mots:", min = 5, max = 100, value = 20)),
                               column(4, h3("DATA ANALYST",align="center"), plotOutput("wordcloud_DATA_ANALYST")),
                               column(4, h3("DATA SCIENTIST",align="center"), plotOutput("wordcloud_DATA_SCIENTIST")),
