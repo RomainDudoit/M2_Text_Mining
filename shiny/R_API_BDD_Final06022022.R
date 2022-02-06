@@ -348,7 +348,7 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token, dateMaj){
     suffixurl=paste("&minCreationDate=",dateMaj,"&maxCreationDate=",now,sep="")
   }
   #decommenter pour tester la MAJ
-  suffixurl=paste("&minCreationDate=2021-02-02T19:48:39Z,&maxCreationDate=2022-02-02T19:48:39Z",sep="")
+  #suffixurl=paste("&minCreationDate=2021-02-02T19:48:39Z,&maxCreationDate=2022-02-02T19:48:39Z",sep="")
   
   #répeter tant que l'appel de webservice envoie le code 206: qui veut dire que il y a encore des lignes
   # qui correspond à la recherche mais seulement 150 lignes sont retournées à chaque fois pour l'API
