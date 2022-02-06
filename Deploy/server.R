@@ -349,7 +349,3 @@ server = shinyServer(function(input, output) {
   
 })
 
-
-rsconnect::setAccountInfo(name='happycompany',
-                          token='F53C9D602466888988EE8EB4036AEDA2',
-                          secret='Jvwc+HDY/IrmVdcoV21WWUmKftpFQNBOjBCK7v6Q')
