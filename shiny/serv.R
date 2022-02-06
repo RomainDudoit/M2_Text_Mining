@@ -122,8 +122,7 @@ server = shinyServer(function(input, output) {
   
   top_competences_metier = function(metier,df1){
     df = df1 %>% filter(categorie == metier)
-    
-    
+
     # Nettoyage
     df$description_offre = Nettoyage_dfdescription_offre(df$description_offre)
     
@@ -188,9 +187,7 @@ server = shinyServer(function(input, output) {
   output$wordcloud_DATA_ANALYST <- renderPlot({
     wordcloud_metier(metier = "DATA ANALYST",df1)
   })
-  
-  
-  
+
   output$wordcloud_DATA_SCIENTIST <- renderPlot({
     wordcloud_metier(metier = "DATA SCIENTIST",df1)
   })
@@ -237,9 +234,7 @@ server = shinyServer(function(input, output) {
     
     # Matrice termes documents 
     mtd = as.matrix(compte %>%  cast_dtm(document = line, term = word, value = freq))
-    
     app_termes = apply(mtd, 2, function(x){sum(x>1)})
-    
     mtd_filtre = as.data.frame(mtd[,app_termes > 10])
     
     # Construction de la table de contingence 
@@ -265,15 +260,20 @@ server = shinyServer(function(input, output) {
     GROUP BY offre.id_secteur;")
   Encoding(df_11[["libelle_secteur"]]) = "UTF-8"
   dbDisconnect(mydb)
-
   
   output$value1 <- renderValueBox({
-    valueBox(nrow(df1), "Nombre d'offres :", icon = icon("stats",lib='glyphicon'), color = "aqua")
+    valueBox(nrow(df1 %>% filter(categorie == "DATA ANALYST")), "Offres 'DATA ANALYST' :", icon = icon("stats",lib='glyphicon'), color = "aqua")
+  })
+  output$value2 <- renderValueBox({
+    valueBox(nrow(df1 %>% filter(categorie == "DATA SCIENTIST")), "Offres 'DATA SCIENTIST' :", icon = icon("stats",lib='glyphicon'), color = "aqua")
+  })
+  output$value3 <- renderValueBox({
+    valueBox(nrow(df1 %>% filter(categorie == "DATA ENGINEER")), "Offres 'DATA ENGINEER' :", icon = icon("stats",lib='glyphicon'), color = "aqua")
   })
   
   
   output$plot_Stat_desc_1 <- renderDataTable({
-    df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% arrange(-nb) 
+    df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% filter(categorie %in% input$metier_stat) %>% arrange(-nb) 
     df_11 = head(df_11,7)
   }, options = list(searching = FALSE, paging = FALSE))
   
@@ -288,8 +288,7 @@ server = shinyServer(function(input, output) {
   dbDisconnect(mydb)
   
   output$plot_Stat_desc_2 <- renderPlotly({
-    #df_12 = df_12 %>% group_by(type_contrat) 
-    
+    df_12 = df_12 %>% filter(categorie %in% input$metier_stat) # Filtre
     fig <- plot_ly(df_12, labels = ~type_contrat, values = ~nb, type = 'pie') %>%
       layout(title = "Répartition des types de contrat (par catégorie)",
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -310,6 +309,7 @@ server = shinyServer(function(input, output) {
   
   
   output$plot_Stat_desc_3 <- renderPlotly({
+    df_13 = df_13 %>% filter(categorie %in% input$metier_stat) # Filtre
     fig <- plot_ly(df_13, labels = ~experience_exigee, values = ~nb, type = 'pie') %>%
       layout(title = "Répartition des expériences exigées par catégorie",
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -318,15 +318,34 @@ server = shinyServer(function(input, output) {
   
   
   ############################################################################## Page 5
+  mydb=connect() # Ouverture de la connexion
+  df_carto=dbGetQuery(
+    mydb,
+    "select offre_emploi.categorie, ref_regions.nom_region, ref_departement.nom_departement, Count(*) as nb
+  from ref_regions
+  RIGHT JOIN ref_departement on ref_regions.code_region = ref_departement.code_region
+  RIGHT join ref_communes on ref_departement.code_departement = ref_communes.code_departement
+  RIGHT JOIN offre_emploi on offre_emploi.codeCommune = ref_communes.code_commune
+  group by ref_departement.code_departement, offre_emploi.categorie;")
+  Encoding(df_carto[["nom_region"]]) = "UTF-8"
+  Encoding(df_carto[["nom_departement"]]) = "UTF-8"
+  dbDisconnect(mydb)
   
-  # output$plot <- renderPlot({
-  #   df %>% group_by(region) %>%
-  #     summarise(count = n()) %>%
-  #     ggplot() +
-  #     geom_col(aes(x = count, y= region), fill = "#23798E", width=.6) +
-  #     ggtitle("Repartition des offres selon les régions")
-  # })
-  
+  output$plot_carto <- renderPlotly({
+    df_carto = df_carto %>% filter(categorie %in% input$metier_stat) # Filtre
+    
+    france <- map_data("france")
+    head(france)
+    var <- data.frame(freq=tapply(df_carto$nb, df_carto$nom_departement, sum)) # using rows as a dummy variable
+    var$var1 <- row.names(var)
+    head(var)
+    france$variable <- var$freq[match(france$region,var$var1)]
+    france$variable[is.na(france$variable)] <- 0
+    ggplot(france, aes(x=long, y=lat)) +
+      geom_polygon(aes(group=group, fill=variable), col="black",lwd=0) +
+      #scale_fill_brewer(palette = "Set2")
+      scale_fill_continuous(trans = 'reverse')
+  })
   
 })
 

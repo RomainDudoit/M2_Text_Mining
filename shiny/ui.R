@@ -5,6 +5,7 @@ ui = shinyUI(fluidPage(
                 title = "Application - Text Mining", # Titre dans le navigateur
                 dashboardHeader(title = "Application - Text mining", titleWidth = 300), 
                 dashboardSidebar(width = 300,
+                                 actionButton("maj", "Mise à jour de la base de données"),
                                  sidebarMenu(
                                    menuItem("Connexion à l'API", tabName = "page1"),
                                    menuItem("Analyse par métier", tabName = "page2"),
@@ -15,13 +16,13 @@ ui = shinyUI(fluidPage(
                 ),
                 dashboardBody(
                   tabItems(
-                    tabItem(tabName = "page1",
-                            fluidRow(
-                              column(12, h2("Importation des données", align = "center")),
-                              column(12, h4("I. Alimentation de la base de données à l'aide de l'API pôle emploi")),
-                              column(12, h4("II. Récupération des données"))
-                              
-                            )),
+                    # tabItem(tabName = "page1",
+                    #         fluidRow(
+                    #           column(12, h2("Importation des données", align = "center")),
+                    #           column(12, h4("I. Alimentation de la base de données à l'aide de l'API pôle emploi")),
+                    #           column(12, h4("II. Récupération des données"))
+                    #           
+                    #         )),
                     tabItem(tabName = "page2", 
                             #titlePanel("Analyse par métier"),
                             fluidRow(
@@ -54,8 +55,14 @@ ui = shinyUI(fluidPage(
                     tabItem(
                       tabName = "page4",
                       fluidRow(
-                        column(12, h2("Analyse par secteur d'activité", align = "center")),
-                        column(12, valueBoxOutput("value1")),
+                        column(12, h2("Statistiques descriptives par métier", align = "center")),
+                        column(12, checkboxGroupInput("metier_stat", "Métiers à analyser :",
+                                                      choices = c("DATA ANALYST","DATA SCIENTIST","DATA ENGINEER"), 
+                                                      selected = c("DATA ANALYST","DATA SCIENTIST","DATA ENGINEER"),
+                                                      inline = TRUE)),
+                        column(4, valueBoxOutput("value1")),
+                        column(4, valueBoxOutput("value2")),
+                        column(4, valueBoxOutput("value3")),
                         column(12, dataTableOutput('plot_Stat_desc_1')),
                         column(6, plotlyOutput('plot_Stat_desc_2')),
                         column(6, plotlyOutput('plot_Stat_desc_3'))
@@ -63,7 +70,10 @@ ui = shinyUI(fluidPage(
                     ),
                     tabItem(
                       tabName = "page5",
-                      "test page 5"
+                      fluidRow(
+                        column(12, h2("Cartographie", align = "center")),
+                        column(12, plotlyOutput('plot_carto'))
+                      )
                       
                     )
                   )
