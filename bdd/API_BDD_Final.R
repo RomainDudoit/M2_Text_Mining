@@ -6,14 +6,28 @@
 
 #################################################################################################
 
-# Connexion à la base
+
+#Packages
+# install.packages(c("httr", "jsonlite"))
+# install.packages('stringr')
+# install.packages("RMySQL")
+#install.packages("utf8")
+
+library(httr)
+library(jsonlite)
+library(stringr)
+library(RMySQL)
+library(utf8)
+
+
+# Connexion ? la base
 connect<-function(user='root', password='root', dbname='textmining', host='127.0.0.1', port=3306){
   mydb = RMySQL::dbConnect(MySQL(), user=user, password=password, dbname=dbname, host=host, port=port, encoding = "utf8mb4")
   return (mydb)
 }
 
 
-# Insertion des données dans la table ref_regions. Fonction appelée par une autre 
+# Insertion des donn?es dans la table ref_regions. Fonction appel?e par une autre 
 insert_into_regions <-function (connexion, nom, code){
   req = "INSERT INTO ref_regions (nom_region, code_region) VALUES ("
   req = paste (req,DBI::dbQuoteString(connexion,nom),",",DBI::dbQuoteString(connexion,code),")")
@@ -21,7 +35,7 @@ insert_into_regions <-function (connexion, nom, code){
   DBI::dbGetQuery(connexion, req)
 }
 
-# Insertion des données dans la table ref_departements. Fonction appelée par une autre 
+# Insertion des donn?es dans la table ref_departements. Fonction appel?e par une autre 
 insert_into_departements <-function (connexion, nom, code, codeRegion){
   req = "INSERT INTO ref_departement (nom_departement, code_departement, code_region) VALUES ("
   req = paste (req,DBI::dbQuoteString(connexion,nom),",",DBI::dbQuoteString(connexion,code),
@@ -30,7 +44,7 @@ insert_into_departements <-function (connexion, nom, code, codeRegion){
   DBI::dbGetQuery(connexion, req)
 }
 
-# Insertion des données dans la table ref_communes. Fonction appelée par une autre 
+# Insertion des donn?es dans la table ref_communes. Fonction appel?e par une autre 
 insert_into_communes <-function (connexion,  code, nom, codePostal, codeDepartement){
   
   req = "INSERT INTO ref_communes ( nom_commune, code_commune, code_departement, code_postal) VALUES ("
@@ -42,7 +56,7 @@ insert_into_communes <-function (connexion,  code, nom, codePostal, codeDepartem
   DBI::dbGetQuery(connexion, req)
 }
 
-# Insertion des données dans la table poste Fonction appelée par une autre 
+# Insertion des donn?es dans la table poste Fonction appel?e par une autre 
 insert_into_poste <-function (connexion, id, code_rome, libelle_rome, appellation_libelle){
   query = "insert into poste (id_poste,code_rome, libelle_rome, appellation_libelle) values ("
   query = paste(query,"'",id,"','",code_rome,"',",
@@ -51,21 +65,21 @@ insert_into_poste <-function (connexion, id, code_rome, libelle_rome, appellatio
   execute_requete(connexion, query)
 }
 
-# Insertion des données dans la table contrat. Fonction appelée par une autre 
+# Insertion des donn?es dans la table contrat. Fonction appel?e par une autre 
 insert_into_contrat <-function (connexion, id, type_contrat, libelle_contrat){
   query = "insert into contrat (id_contrat, type_contrat, libelle_contrat) values ("
   query = paste(query,"'",id,"','",type_contrat,"','",libelle_contrat,"')",sep="")
   execute_requete(connexion, query)
 }
 
-# Insertion des données dans la table experience Fonction appelée par une autre 
+# Insertion des donn?es dans la table experience Fonction appel?e par une autre 
 insert_into_experience <-function (connexion, id,libelle_experience, experience_exigee){
   query = "insert into experience (id_experience,libelle_experience, experience_exigee) values ("
   query = paste(query,"'",id,"','",libelle_experience,"','",experience_exigee,"')",sep="")
   execute_requete(connexion, query)
 }
 
-# Insertion des données dans la table activité. Fonction appelée par une autre 
+# Insertion des donn?es dans la table activit?. Fonction appel?e par une autre 
 insert_into_secteur_activite <-function (connexion,id,libelle_secteur, secteur_activite){
   query = "insert into secteur_activite (id_secteur,libelle_secteur, secteur_activite) values ("
   query = paste(query,"'",id,"',",
@@ -74,7 +88,7 @@ insert_into_secteur_activite <-function (connexion,id,libelle_secteur, secteur_a
   execute_requete(connexion, query)
 }
 
-# Insertion des données dans la table offre_emploi. Fonction appelée par une autre 
+# Insertion des donn?es dans la table offre_emploi. Fonction appel?e par une autre 
 insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_offre, date_creation,
                                      id_contrat, id_poste,id_experience,id_secteur, categorie, codeCommune,
                                      salaire, nom_entreprise){
@@ -101,9 +115,9 @@ insert_into_Offre_emploi <-function (connexion,id,intitule_offre, description_of
   
 }
 
-# Vérification si l'experience existe déjà dans la base en se basant sur les paramètres de la fonction.
+# V?rification si l'experience existe d?j? dans la base en se basant sur les param?tres de la fonction.
 # renvoie son id ou null
-# fonction appelée par une autre 
+# fonction appel?e par une autre 
 get_experience<- function(connexion, libelle_experience, experience_exigee){
   experience_exigee = utf8_encode(experience_exigee)
   libelle_experience = utf8_encode(libelle_experience)
@@ -115,9 +129,9 @@ get_experience<- function(connexion, libelle_experience, experience_exigee){
   return (DBI::dbGetQuery(connexion, req)[1,1])
 }
 
-# Vérification si secteur de l'activité existe déjà dans la base en se basant sur les paramètres de la fonction.
+# V?rification si secteur de l'activit? existe d?j? dans la base en se basant sur les param?tres de la fonction.
 # renvoie son id ou null
-# fonction appelée par une autre 
+# fonction appel?e par une autre 
 get_secteur_activite<- function(connexion, libelle_secteur, secteur_activite){
   
   libelle_secteur = utf8_encode(libelle_secteur)
@@ -131,9 +145,9 @@ get_secteur_activite<- function(connexion, libelle_secteur, secteur_activite){
   return (DBI::dbGetQuery(connexion, req)[1,1])
 }
 
-# Vérification si l'contrat existe déjà dans la base en se basant sur les paramètres de la fonction.
+# V?rification si l'contrat existe d?j? dans la base en se basant sur les param?tres de la fonction.
 # renvoie son id ou null
-# fonction appelée par une autre 
+# fonction appel?e par une autre 
 get_contrat<- function(connexion, type_contrat, libelle_contrat){
   libelle_contrat = utf8_encode(libelle_contrat)
   req = "select id_contrat from contrat where "
@@ -144,17 +158,17 @@ get_contrat<- function(connexion, type_contrat, libelle_contrat){
 }
 
 
-# Vérification si le poste existe déjà dans la base en se basant sur les paramètres de la fonction.
+# V?rification si le poste existe d?j? dans la base en se basant sur les param?tres de la fonction.
 # renvoie son id ou null
-# fonction appelée par une autre 
+# fonction appel?e par une autre 
 get_poste<- function(connexion, code_rom){
   req = paste("select id_poste from poste where code_rome='",code_rom,"'", sep="")
   return (DBI::dbGetQuery(connexion, req)[1,1])
 }
 
 
-#Execution de la requête passée en paramère en UTF-8
-#Fonction appelée par une autre
+#Execution de la requ?te pass?e en param?re en UTF-8
+#Fonction appel?e par une autre
 execute_requete <-function (connexion, query){
   RMySQL::dbSendQuery(connexion,"SET NAMES utf8mb4;")
   RMySQL::dbSendQuery(connexion,"SET CHARACTER SET utf8mb4;")
@@ -163,10 +177,10 @@ execute_requete <-function (connexion, query){
 }
 
 
-# Vérification si l'id de ligne recupérée de l'APIexiste déjà dans la base (table offre_emploi)
+# V?rification si l'id de ligne recup?r?e de l'APIexiste d?j? dans la base (table offre_emploi)
 # si oui renvoie l'id sinon renvoie null
-# cette fonction permet de ne pas insérer la même offre plusieurs fois dans la base
-# quand nous faisons des recherches avec des mots clés diffrents mais qui peuvent amener des 
+# cette fonction permet de ne pas ins?rer la m?me offre plusieurs fois dans la base
+# quand nous faisons des recherches avec des mots cl?s diffrents mais qui peuvent amener des 
 # resultats en doublons
 id_exists<- function(connexion, id){
   rs = RMySQL::dbSendQuery(connexion, paste("select id_offre  from Offre_emploi where id_offre='",id,"'",sep=""))
@@ -180,10 +194,10 @@ id_exists<- function(connexion, id){
   }
 }
 
-# sert à remplacer na et null par NULL dans les requêtes
-#si le paramètre est un text, renvoie le text lui même
-#si le paramètre est un na, renvoie le text NULL
-#si le paramètre est un null, renvoie le text NULL
+# sert ? remplacer na et null par NULL dans les requ?tes
+#si le param?tre est un text, renvoie le text lui m?me
+#si le param?tre est un na, renvoie le text NULL
+#si le param?tre est un null, renvoie le text NULL
 na_to_null <- function ( text){
   if(is.null(text) )
     return ("NULL")
@@ -192,21 +206,21 @@ na_to_null <- function ( text){
   return (text)
 }
 
-# fonction qui prend en paramètre un dataframe contenant les résultats des appels API
-# pour l'insérer dans la base 
+# fonction qui prend en param?tre un dataframe contenant les r?sultats des appels API
+# pour l'ins?rer dans la base 
 insert_data_int_bdd<- function (connexion,df){
   
   #parcourir le dataframe ligne par ligne
   for(i in 1:nrow(df)) {
     id = df[i,"id"]
-    # si la ligne existe déjà dans la base, on passe à la ligne suivante
-    # pour plus de détails, voir les commentaires de la fonction id_exists
+    # si la ligne existe d?j? dans la base, on passe ? la ligne suivante
+    # pour plus de d?tails, voir les commentaires de la fonction id_exists
     if(id_exists(connexion, id)){
       next;
     }
     
-    # vérifier si poste existe 
-    # s'il n'existe pas on l'insère 
+    # v?rifier si poste existe 
+    # s'il n'existe pas on l'ins?re 
     id_poste= get_poste(connexion, df[i,"romeCode"])
     if(is.na(id_poste)){
       insert_into_poste (connexion,id, df[i,"romeCode"], df[i,"romeLibelle"],
@@ -214,24 +228,24 @@ insert_data_int_bdd<- function (connexion,df){
       id_poste=id
     }
     
-    # vérifier si contrat existe 
-    # s'il n'existe pas on l'insère 
+    # v?rifier si contrat existe 
+    # s'il n'existe pas on l'ins?re 
     id_contrat = get_contrat(connexion, df[i,"typeContrat"], df[i,"typeContratLibelle"])
     if(is.na(id_contrat)){
       insert_into_contrat(connexion,id,df[i,"typeContrat"], df[i,"typeContratLibelle"])
       id_contrat=id
     }
     
-    # vérifier si experience existe 
-    # s'il n'existe pas on l'insère 
+    # v?rifier si experience existe 
+    # s'il n'existe pas on l'ins?re 
     id_experience = get_experience(connexion, df[i,"experienceLibelle"], df[i,"experienceExige"])
     if(is.na(id_experience)){
       insert_into_experience (connexion,id,df[i,"experienceLibelle"], df[i,"experienceExige"])
       id_experience=id
     }
     
-    #nettoyage: nous avons remarqué des offres sans secteur d'activté.
-    #on les insère dans la base avec le mot NR
+    #nettoyage: nous avons remarqu? des offres sans secteur d'activt?.
+    #on les ins?re dans la base avec le mot NR
     secteurActiviteLibelle = df[i,"secteurActiviteLibelle"]
     secteurActivite = df[i,"secteurActivite"]
     if(is.na(secteurActiviteLibelle))
@@ -239,15 +253,15 @@ insert_data_int_bdd<- function (connexion,df){
     if(is.na(secteurActivite))
       secteurActivite="NR"
     
-    # vérifier si secteur d'activité existe 
-    # s'il n'existe pas on l'insère 
+    # v?rifier si secteur d'activit? existe 
+    # s'il n'existe pas on l'ins?re 
     id_secteur = get_secteur_activite(connexion, secteurActiviteLibelle, secteurActivite)
     if(is.na(id_secteur)){
       insert_into_secteur_activite(mydb, id, secteurActiviteLibelle, secteurActivite)
       id_secteur=id
     }
     
-    #insérer dans la table des faits offre_emploi
+    #ins?rer dans la table des faits offre_emploi
     insert_into_Offre_emploi (connexion,id,df[i,"intitule"],  df[i,"description"],df[i,"dateCreation"],
                               id_contrat, id_poste,id_experience,id_secteur,df[i,"categorie"], 
                               df[i,"lieuTravail.commune"],
@@ -256,9 +270,9 @@ insert_data_int_bdd<- function (connexion,df){
 }
 
 #---------------------------- fonction finale --------------------------------------------#
-# créer la base de données avec les tables 
-# les paramètres sont personnalisable avec des valeurs par defaut
-# fonction à utiliser directement par l'utilisateur final 
+# cr?er la base de donn?es avec les tables 
+# les param?tres sont personnalisable avec des valeurs par defaut
+# fonction ? utiliser directement par l'utilisateur final 
 reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port=3306, dbname="textmining"){
   
   connexion = dbConnect(MySQL(), user=user, password=password, host=host, port=port)
@@ -369,7 +383,7 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
   req=paste(req,"  REFERENCES experience (id_experience)	,                    ")
   req=paste(req,"  FOREIGN KEY (id_secteur)                                    ")
   req=paste(req,"  REFERENCES secteur_activite (id_secteur)		                 ")
-  # problème de saisie de code commune: des fois les employeurs mettent le code postal 
+  # probl?me de saisie de code commune: des fois les employeurs mettent le code postal 
   # au lieu de code commune
   #req=paste(req,"  FOREIGN KEY  (codeCommune)                                    ")
   #req=paste(req,"  REFERENCES ref_communes (code_commune)		                 ")
@@ -380,8 +394,8 @@ reset_base_donnes<-function(user='root', password='root', host='127.0.0.1', port
 }
 
 #---------------------------- fonction finale --------------------------------------------#
-# renvoie la date de la dernière mise à jour de la base ou NA
-# à utiliser au moment de recupèration des données de l'API
+# renvoie la date de la derni?re mise ? jour de la base ou NA
+# ? utiliser au moment de recup?ration des donn?es de l'API
 date_last_update<- function(connexion){
   date_last_update=DBI::dbGetQuery(connexion, "select max(date_creation) from offre_emploi")
   maj = date_last_update[[1]]
@@ -408,8 +422,8 @@ Add_categorie <- function(df){
   return(df)
 }
 
-# fait appel à l'API des referentiels des région pour alimenter la base
-# fonction appelée par une autre
+# fait appel ? l'API des referentiels des r?gion pour alimenter la base
+# fonction appel?e par une autre
 mise_a_jour_regions<-function (connexion, token){
   url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/regions"
   request_data <-httr::GET(url,add_headers(Authorization = token))
@@ -419,8 +433,8 @@ mise_a_jour_regions<-function (connexion, token){
   }
 }
 
-# fait appel à l'API des referentiels des departements pour alimenter la base
-# fonction appelée par une autre
+# fait appel ? l'API des referentiels des departements pour alimenter la base
+# fonction appel?e par une autre
 mise_a_jour_departement<-function (connexion,token){
   url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/departements"
   request_data <- httr::GET(url,add_headers(Authorization = token))
@@ -430,13 +444,13 @@ mise_a_jour_departement<-function (connexion,token){
   }
 }
 
-# fait appel à l'API des referentiels des communes pour alimenter la base
-# fonction appelée par une autre
+# fait appel ? l'API des referentiels des communes pour alimenter la base
+# fonction appel?e par une autre
 mise_a_jour_communes<-function (connexion, token){
   url="https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/communes"
   request_data <- httr::GET(url,add_headers(Authorization = token))
   data = fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)
-  #exclure les departements qui ne sont pas reférencées dans l'API departements 
+  #exclure les departements qui ne sont pas ref?renc?es dans l'API departements 
   data = subset(data, !(codeDepartement %in% c("977","978","979","980","981","982","983","984",
                                                "985","986","987","988","989","975","99")))
   
@@ -447,7 +461,7 @@ mise_a_jour_communes<-function (connexion, token){
 }
 
 #---------------------------- fonction finale --------------------------------------------#
-# insère dans la base le reférentiel des deparetement, regions et communes
+# ins?re dans la base le ref?rentiel des deparetement, regions et communes
 mise_a_jour_referentiel<-function (connexion, token){
   mise_a_jour_regions(connexion,token)
   mise_a_jour_departement(connexion,token)
@@ -455,30 +469,30 @@ mise_a_jour_referentiel<-function (connexion, token){
 }
 
 #---------------------------- fonction finale --------------------------------------------#
-# recupère les données concernant les offres de l'API et les insère dans la base
-# si dateMaj est NA, la fonction recupère toutes les données disponibles sinon le diffrence suelement(recupere uniquement les offres ayant une date > max date de creation de la base )
+# recup?re les donn?es concernant les offres de l'API et les ins?re dans la base
+# si dateMaj est NA, la fonction recup?re toutes les donn?es disponibles sinon le diffrence suelement(recupere uniquement les offres ayant une date > max date de creation de la base )
 data_from_api_to_bdd<-function (connexion,mot_cle, token, dateMaj){
   
-  #préparer le paramètre 
+  #pr?parer le param?tre 
   mot_cle = str_replace_all(mot_cle," ","+")
   
-  # Nous ne pouvons recupérer que 150 ligne du resultat à chaque appel pour l' API
-  # le paramètre "range" nous permet de faire plusieurs appels par tranche de 150 ligne à chaque fois
+  # Nous ne pouvons recup?rer que 150 ligne du resultat ? chaque appel pour l' API
+  # le param?tre "range" nous permet de faire plusieurs appels par tranche de 150 ligne ? chaque fois
   index_min=0
   index_max=149
   
-  # si la date de la dernière mise à jours n'est pas NA, l'ajouter comme paramère dans l'url de l'appel
+  # si la date de la derni?re mise ? jours n'est pas NA, l'ajouter comme param?re dans l'url de l'appel
   suffixurl=""
   if(is.na(dateMaj)){
-    print("Date de dernière mise à jour est NULL")
+    print("Date de derni?re mise ? jour est NULL")
   }else{
-    print(paste("Dernière mise à jour de la base: ",dateMaj, sep=""))
+    print(paste("Derni?re mise ? jour de la base: ",dateMaj, sep=""))
     now = format(Sys.time(), "%Y-%m-%dT%H:%M:%OSZ")
     suffixurl=paste("&minCreationDate=",dateMaj,"&maxCreationDate=",now,sep="")
   }
   
-  #répeter tant que l'appel de webservice envoie le code 206: qui veut dire que il y a encore des lignes
-  # qui correspond à la recherche mais seulement 150 lignes sont retournées à chaque fois pour l'API
+  #r?peter tant que l'appel de webservice envoie le code 206: qui veut dire que il y a encore des lignes
+  # qui correspond ? la recherche mais seulement 150 lignes sont retourn?es ? chaque fois pour l'API
   repeat{
     #construction de l'URL 
     url = paste("https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search?motsCles=",
@@ -490,7 +504,7 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token, dateMaj){
                 suffixurl,
                 sep=""
     )
-    #recupérer les données
+    #recup?rer les donn?es
     request_data <-httr::GET(url,add_headers(Authorization = token))
     print(url)
     print(status_code(request_data))
@@ -499,11 +513,11 @@ data_from_api_to_bdd<-function (connexion,mot_cle, token, dateMaj){
       df=as.data.frame(fromJSON(content(request_data,as="text", encoding = "UTF-8"), flatten =TRUE)$resultats)
       df = Add_categorie(df)
       insert_data_int_bdd(connexion,df)
-      #si le code different de 206 ou 200, arrêter la boucle (il n'y plus de résultat ou erreur)
+      #si le code different de 206 ou 200, arr?ter la boucle (il n'y plus de r?sultat ou erreur)
     }else{
       break
     }
-    # passer à la tranche suivante
+    # passer ? la tranche suivante
     index_min= index_min+150
     index_max= index_max+150
   }
@@ -537,23 +551,6 @@ fermerConnexion<-function(connexion){
   RMySQL::dbDisconnect(connexion)  
 }
 
-
-
-
-
-
-#Packages
-# install.packages(c("httr", "jsonlite"))
-# install.packages('stringr')
-# install.packages("RMySQL")
-#install.packages("utf8")
-
-library(httr)
-library(jsonlite)
-library(stringr)
-library(RMySQL)
-library(utf8)
-
 #-------------------execution exemple --------------------------#
 #initialisation de la base
 reset_base_donnes()
@@ -564,7 +561,7 @@ token=get_token()
 mydb=connect()
 # table region/departement/commune
 mise_a_jour_referentiel(mydb, token)
-#Mise à jour de la base
+#Mise ? jour de la base
 maj=date_last_update(mydb)
 #recuperation des mots cles de l'api 
 for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
@@ -574,15 +571,15 @@ for (motcle in c("Data scientist", "Data engineer", "Data analyst"))
 fermerConnexion(mydb)
 
 #Reflexion 
-#étapes pour Rshiny (boutons)
-#reset_base_donnes(): à la première connexion ou à la demande avec un bouton
-#mise_a_jour_referentiel(): une seule fois suite à reset_base_donnees même bouton que reset base
-# toujours: à chaque ouverture de l'application:
-# - connect(): ouvrir une connexion. ne pas ouvrir beaucoup sinon la base sera saturée
-# - date_last_update(): pour la mise à jour des offres, recupérer la dernière date de MAJ
-# - get_token (): pour avoir un token à chaque fois on fait appel à une fonction l'utilisant 
-# - data_from_api_to_bdd (): pour mettre à jour les données dans la base ou les insérer pour la première fois
-# - fermerConnexion(): à faire à chaque fois on veut quitter l'application
+#?tapes pour Rshiny (boutons)
+#reset_base_donnes(): ? la premi?re connexion ou ? la demande avec un bouton
+#mise_a_jour_referentiel(): une seule fois suite ? reset_base_donnees m?me bouton que reset base
+# toujours: ? chaque ouverture de l'application:
+# - connect(): ouvrir une connexion. ne pas ouvrir beaucoup sinon la base sera satur?e
+# - date_last_update(): pour la mise ? jour des offres, recup?rer la derni?re date de MAJ
+# - get_token (): pour avoir un token ? chaque fois on fait appel ? une fonction l'utilisant 
+# - data_from_api_to_bdd (): pour mettre ? jour les donn?es dans la base ou les ins?rer pour la premi?re fois
+# - fermerConnexion(): ? faire ? chaque fois on veut quitter l'application
 
 
 
