@@ -1,0 +1,11 @@
+name: app_final
+title:
+username:
+account: happycompany
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5595865
+bundleId: 5551729
+url: https://happycompany.shinyapps.io/app_final/
+when: 1644230994.45246
+lastSyncTime: 1644230994.45246
