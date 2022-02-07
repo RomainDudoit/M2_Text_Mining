@@ -356,6 +356,8 @@ server = shinyServer(function(input, output) {
   
   Encoding(df_carto[["nom_region"]]) = "UTF-8"
   Encoding(df_carto[["nom_departement"]]) = "UTF-8"
+  df_carto$nom_region=chartr("àâäéèêëïîôöùûüÿç", "aaaeeeeiioouuuyc", df_carto$nom_region)
+  df_carto$nom_departement=chartr("àâäéèêëïîôöùûüÿç", "aaaeeeeiioouuuyc",df_carto$nom_departement)
   
   output$plot_carto <- renderPlotly({
     df_carto = df_carto %>% filter(categorie %in% input$metier_stat) # Filtre
@@ -364,9 +366,6 @@ server = shinyServer(function(input, output) {
     var <- data.frame(freq=tapply(df_carto$nb, df_carto$nom_departement, sum)) 
     var$var1 <- row.names(var)
     france$nombre_offre <- var$freq[match(france$region,var$var1)]
-    #france$variable[is.na(france$variable)] <- 0
-    
-    #geom_point(aes(text=name, size=pop), colour="red", alpha=1/2, name="cities")
     
     
     ggplot(france, aes(x=long, y=lat)) +
@@ -376,15 +375,7 @@ server = shinyServer(function(input, output) {
   
   output$afc_dep_cat <- renderPlot({
     df_carto = df_carto %>% filter(categorie!="AUTRE")
-    tab = xtabs(nb ~ nom_departement + categorie, data = df_carto)
-    # Calcul de l'AFC + Affichage graphique
-    res.ca <- CA(tab, graph = FALSE) 
-    fviz_ca_biplot (res.ca, repel = TRUE, title	= "Analyse Factorielle des Correspondances")
-  })
-  
-  output$afc_dep_cat <- renderPlot({
-    df_carto = df_carto %>% filter(categorie!="AUTRE")
-    tab = xtabs(nb ~ nom_departement + categorie, data = df_carto)
+    tab = xtabs(nb ~ nom_region + categorie, data = df_carto)
     # Calcul de l'AFC + Affichage graphique
     res.ca <- CA(tab, graph = FALSE) 
     fviz_ca_biplot (res.ca, repel = TRUE, title	= "Analyse Factorielle des Correspondances")

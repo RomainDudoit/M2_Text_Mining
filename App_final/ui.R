@@ -47,7 +47,7 @@ ui = shinyUI(fluidPage(
                               column(4, h3("DATA ANALYST",align="center"), plotOutput("wordcloud_DATA_ANALYST")),
                               column(4, h3("DATA SCIENTIST",align="center"), plotOutput("wordcloud_DATA_SCIENTIST")),
                               column(4, h3("DATA ENGINEER",align="center"), plotOutput("wordcloud_DATA_ENGINEER")),
-                              column(12, h2("Répartition des métiers par département", align = "center"), plotOutput("afc_dep_cat"))
+                              column(12, h2("Répartition des métiers par région", align = "center"), plotOutput("afc_dep_cat"))
                             )),
                     tabItem(tabName = "page3",
                             fluidRow(
