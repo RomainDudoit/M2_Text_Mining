@@ -274,15 +274,19 @@ server = shinyServer(function(input, output) {
   
   # Affichage du nombre d'offre par catégorie
   output$value1 <- renderValueBox({
-    valueBox(table(df1$categorie)["DATA ANALYST"], "DATA ANALYST", icon = icon("stats",lib='glyphicon'), color = "green")
+    df= df_12 %>% filter(categorie=="DATA ANALYST")
+    valueBox(sum(df$nb), "DATA ANALYST", icon = icon("stats",lib='glyphicon'), color = "green")
   })
   
+  #table(df1$categorie)["DATA ANALYST"]
   output$value2 <- renderValueBox({
-    valueBox(table(df1$categorie)["DATA SCIENTIST"], "DATA SCIENTIST", icon = icon("stats",lib='glyphicon'), color = "blue")
+    df= df_12 %>% filter(categorie=="DATA SCIENTIST")
+    valueBox(sum(df$nb), "DATA SCIENTIST", icon = icon("stats",lib='glyphicon'), color = "blue")
   })
   
   output$value3 <- renderValueBox({
-    valueBox(table(df1$categorie)["DATA ENGINEER"], "DATA ENGINEER", icon = icon("stats",lib='glyphicon'), color = "red")
+    df= df_12 %>% filter(categorie=="DATA ENGINEER")
+    valueBox(sum(df$nb), "DATA ENGINEER", "DATA ENGINEER", icon = icon("stats",lib='glyphicon'), color = "red")
   })
   
   # Dataframe df_11 : Nombre d'offre par secteur d'activité et catégorie 
@@ -296,6 +300,7 @@ server = shinyServer(function(input, output) {
   dbDisconnect(mydb)
   
   output$plot_Stat_desc_1 <- renderDataTable({
+    
     df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% filter(categorie %in% input$metier_stat) %>% arrange(-nb) 
     colnames(df_11) = c("Métier","Secteur d'activité","Nombre d'offres")
     df_11 = head(df_11,input$Top_secteur)
