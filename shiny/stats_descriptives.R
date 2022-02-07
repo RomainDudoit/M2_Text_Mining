@@ -120,4 +120,15 @@ group by poste.libelle_rome, offre.categorie;")
 
 dbDisconnect(mydb)
 
-tab = xtabs(nb ~ libelle_secteur + categorie, data = df_11)
+tab = xtabs(nb ~ nom_departement + categorie, data = df_carto)
+
+
+output$afc_dep_cat <- renderPlot({
+  tab = xtabs(nb ~ nom_departement + categorie, data = df_carto)
+  
+  # Calcul de l'AFC + Affichage graphique
+  res.ca <- CA(tab, graph = FALSE) 
+  fviz_ca_biplot (res.ca, repel = TRUE, title	= "Analyse Factorielle des Correspondances")
+})
+
+

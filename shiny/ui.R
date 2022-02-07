@@ -8,9 +8,10 @@ ui = shinyUI(fluidPage(
                                  actionButton("maj", "Mise à jour de la base de données"),
                                  sidebarMenu(
                                    #menuItem("Connexion à l'API", tabName = "page1"),
+                                   menuItem("Statistiques descriptives", tabName = "page4"),
                                    menuItem("Analyse des offres", tabName = "page2"),
                                    menuItem("Analyse des compétences", tabName = "page3"),
-                                   menuItem("Statistiques descriptives", tabName = "page4")
+                                   #menuItem("Statistiques descriptives", tabName = "page4")
                                    #menuItem("Cartographie des offres", tabName = "page5")
                                  )
                 ),
@@ -30,7 +31,8 @@ ui = shinyUI(fluidPage(
                               column(12, sliderInput("nb", "Nombre de mots:", min = 5, max = 100, value = 20)),
                               column(4, h3("DATA ANALYST",align="center"), plotOutput("wordcloud_DATA_ANALYST")),
                               column(4, h3("DATA SCIENTIST",align="center"), plotOutput("wordcloud_DATA_SCIENTIST")),
-                              column(4, h3("DATA ENGINEER",align="center"), plotOutput("wordcloud_DATA_ENGINEER"))
+                              column(4, h3("DATA ENGINEER",align="center"), plotOutput("wordcloud_DATA_ENGINEER")),
+                              column(12, h2("Répartition des métiers par département", align = "center"), plotOutput("afc_dep_cat"))
                             )),
                     tabItem(tabName = "page3",
                             fluidRow(
@@ -43,7 +45,7 @@ ui = shinyUI(fluidPage(
                                                                          "basededonnees", "businessintelligence", "modele", "machinelearning", 
                                                                          "decision", "sas", "azure", "aws", "java","scala", "reporting", "anglais", "statistique"),
                                                             inline = TRUE)),
-                              column(12, actionButton("OK1", "OK")),
+                              #column(12, actionButton("OK1", "OK")),
                               column(12, sliderInput("top", "Top des compétences par métier:", min = 1, max = 15, value = 5)),
                               column(4, h4("DATA ANALYST"), dataTableOutput("top_competences_DATA_ANALYST")),
                               column(4, h4("DATA SCIENTIST"), dataTableOutput("top_competences_DATA_SCIENTIST")),
