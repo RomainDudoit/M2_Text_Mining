@@ -1,3 +1,25 @@
+library(shiny)
+library(shinydashboard)
+library(dplyr)
+library(lubridate)
+library(tidyverse)
+library(tidytext)
+library(tm)
+library(wordcloud)
+library(FactoMineR)
+library(factoextra)
+library(gplots)
+library(graphics)
+library(corrplot)
+library(questionr)
+library(RMySQL)
+library(plotly)
+library(httr)
+library(jsonlite)
+library(stringr)
+library(RMySQL)
+library(utf8)
+
 
 ui = shinyUI(fluidPage(
   dashboardPage(skin = "purple",
@@ -6,12 +28,9 @@ ui = shinyUI(fluidPage(
                 dashboardSidebar(width = 300,
                                  actionButton("maj", "Mise à jour de la base de données"),
                                  sidebarMenu(
-                                   #menuItem("Connexion à l'API", tabName = "page1"),
                                    menuItem("Statistiques descriptives", tabName = "page4"),
                                    menuItem("Analyse des offres", tabName = "page2"),
-                                   menuItem("Analyse des compétences", tabName = "page3"),
-                                   #menuItem("Statistiques descriptives", tabName = "page4")
-                                   #menuItem("Cartographie des offres", tabName = "page5")
+                                   menuItem("Analyse des compétences", tabName = "page3")
                                  )
                 ),
                 dashboardBody(
@@ -44,7 +63,6 @@ ui = shinyUI(fluidPage(
                                                                          "basededonnees", "businessintelligence", "modele", "machinelearning", 
                                                                          "decision", "sas", "azure", "aws", "java","scala", "reporting", "anglais", "statistique"),
                                                             inline = TRUE)),
-                              #column(12, actionButton("OK1", "OK")),
                               column(12, sliderInput("top", "Top des compétences par métier:", min = 1, max = 15, value = 5)),
                               column(4, h4("DATA ANALYST"), dataTableOutput("top_competences_DATA_ANALYST")),
                               column(4, h4("DATA SCIENTIST"), dataTableOutput("top_competences_DATA_SCIENTIST")),
@@ -62,11 +80,12 @@ ui = shinyUI(fluidPage(
                                                             choices = c("DATA ANALYST","DATA SCIENTIST","DATA ENGINEER"), 
                                                             selected = c("DATA ANALYST","DATA SCIENTIST","DATA ENGINEER"),
                                                             inline = TRUE)),
-                              column(12, sliderInput("Top_secteur", "Top des secteurs d'activité :", min = 1, max = 20, value = 5)),
-                              column(8, h3("Nombre d'offres par secteur d'activité",align="center"), dataTableOutput('plot_Stat_desc_1')),
-                              column(4, h3("Cartographie des offres par département",align="center"),plotlyOutput('plot_carto')),
+                              #column(12, sliderInput("Top_secteur", "Top des secteurs d'activité :", min = 1, max = 20, value = 5)),
+                              column(7, h3("Nombre d'offres par secteur d'activité",align="center"), sliderInput("Top_secteur", "Top des secteurs d'activité :", min = 1, max = 20, value = 5), dataTableOutput('plot_Stat_desc_1')),
+                              column(5, h3("Cartographie des offres par département",align="center"),plotlyOutput('plot_carto')),
                               column(6, h3("Répartition des types de contrat",align="center"), plotlyOutput('plot_Stat_desc_2')),
                               column(6, h3("Répartition des expériences exigées",align="center"), plotlyOutput('plot_Stat_desc_3')),
+                              column(12, h3("Top 5 des métiers ROME liés à la Data"), dataTableOutput("plot_Stat_desc_4"))
                             )
                     )
                   )

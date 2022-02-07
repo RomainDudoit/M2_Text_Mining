@@ -19,14 +19,14 @@ library(jsonlite)
 library(stringr)
 library(RMySQL)
 library(utf8)
-
+library(shinyalert)
 
 
 server = shinyServer(function(input, output) {
-  # A executer une seule fois :
-  # reset_baseb_donnes()
   
-  #Mise ? jour des donn?es
+  eval(parse("mise_a_jour.R",encoding = "UTF-8"))
+  
+  #Mise à jour des données
   observeEvent(input$maj, {
     token=get_token()
     mydb=connect()
@@ -36,6 +36,7 @@ server = shinyServer(function(input, output) {
       df= data_from_api_to_bdd(mydb,motcle,token, maj)
     print("fin update ")
     dbDisconnect(mydb)
+    shinyalert("Done !", "La base de données a bien été mise à jour !", type = "success")
   })
   
   connect<-function(user='root', password='root', dbname='textmining', host='127.0.0.1', port=3306){
@@ -182,8 +183,7 @@ server = shinyServer(function(input, output) {
   dbDisconnect(mydb) # Fermeture de la connexion
   
   listEntreprise = chartr("àâäéèêëïîôöùûüÿç", "aaaeeeeiioouuuyc", str_to_lower(unlist(dfEntreprise$nom_entreprise)))
-  print(head(dfEntreprise))
-  
+
   # Liste des stopwords spécifiques 
   stopwords_spe = c("data", "donnees", "donnee", "cadre", "profil", "formation", "science", "suivante", "suivantes",
                     "france", "chez", "minimum", "depuis", "jour", "departement", "asie", "pays",
@@ -232,6 +232,10 @@ server = shinyServer(function(input, output) {
   output$top_competences_DATA_ENGINEER <- renderDataTable({
     top_competences_metier(metier = "DATA ENGINEER",df1)
   }, options = list(searching = FALSE, paging = FALSE))
+  
+  
+  
+  
   
   output$afc_plot <- renderPlot({
     
@@ -287,7 +291,7 @@ server = shinyServer(function(input, output) {
   # Dataframe df_11 : Nombre d'offre par secteur d'activité et catégorie 
   mydb=connect() 
   df_11 = dbGetQuery(mydb,
-                     "SELECT offre.categorie, COUNT(*) as nb, secteur.libelle_secteur 
+                     "SELECT offre.categorie,secteur.libelle_secteur,COUNT(*) as nb
     FROM offre_emploi offre LEFT JOIN secteur_activite secteur
     ON offre.id_secteur = secteur.id_secteur
     GROUP BY offre.id_secteur;")
@@ -296,7 +300,7 @@ server = shinyServer(function(input, output) {
   
   output$plot_Stat_desc_1 <- renderDataTable({
     df_11 = df_11 %>% filter(libelle_secteur!="NR") %>% filter(categorie %in% input$metier_stat) %>% arrange(-nb) 
-    colnames(df_11) = c("Métier", "Nombre d'offres", "Secteur d'activité")
+    colnames(df_11) = c("Métier","Secteur d'activité","Nombre d'offres")
     df_11 = head(df_11,input$Top_secteur)
   }, options = list(searching = FALSE, paging = FALSE))
   
@@ -357,19 +361,50 @@ server = shinyServer(function(input, output) {
     france <- map_data("france") 
     var <- data.frame(freq=tapply(df_carto$nb, df_carto$nom_departement, sum)) 
     var$var1 <- row.names(var)
-    france$variable <- var$freq[match(france$region,var$var1)]
+    france$nombre_offre <- var$freq[match(france$region,var$var1)]
     #france$variable[is.na(france$variable)] <- 0
+    
+    #geom_point(aes(text=name, size=pop), colour="red", alpha=1/2, name="cities")
+    
+    
     ggplot(france, aes(x=long, y=lat)) +
-      geom_polygon(aes(group=group, fill=variable), col="black",lwd=0) +
-      #scale_fill_brewer(palette = "Set2")
+      geom_polygon(aes(group=group, text=region, fill=nombre_offre), col="black",lwd=0) +
       scale_fill_continuous(trans = 'reverse')
   })
   
   output$afc_dep_cat <- renderPlot({
+    df_carto = df_carto %>% filter(categorie!="AUTRE")
     tab = xtabs(nb ~ nom_departement + categorie, data = df_carto)
     # Calcul de l'AFC + Affichage graphique
     res.ca <- CA(tab, graph = FALSE) 
     fviz_ca_biplot (res.ca, repel = TRUE, title	= "Analyse Factorielle des Correspondances")
   })
+  
+  output$afc_dep_cat <- renderPlot({
+    df_carto = df_carto %>% filter(categorie!="AUTRE")
+    tab = xtabs(nb ~ nom_departement + categorie, data = df_carto)
+    # Calcul de l'AFC + Affichage graphique
+    res.ca <- CA(tab, graph = FALSE) 
+    fviz_ca_biplot (res.ca, repel = TRUE, title	= "Analyse Factorielle des Correspondances")
+  })
+  
+  
+  mydb=connect() 
+  df_14=dbGetQuery(mydb,
+                   "SELECT poste.libelle_rome, COUNT(*) as nb
+    FROM offre_emploi offre LEFT JOIN poste
+    ON offre.id_poste = poste.id_poste
+    GROUP BY poste.libelle_rome;")
+  dbDisconnect(mydb)
+  Encoding(df_14[["libelle_rome"]]) = "UTF-8"
+  
+  
+  output$plot_Stat_desc_4 <- renderDataTable({
+    df_14 = df_14 %>% arrange(-nb)
+    df_14$Freq = round((df_14$nb/sum(df_14$nb))*100, 2)
+    df_14 = df_14 %>% dplyr::select(-nb)
+    colnames(df_14) = c("Libellé du métier ROME", "Fréquence d'apparition (en %)")
+    head(df_14,5)
+  }, options = list(searching = FALSE, paging = FALSE))
   
 })
