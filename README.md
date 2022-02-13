@@ -1,5 +1,7 @@
-# Projet Text Mining - Master 2 SISE (Romain Dudoit - Fatim-Zahra El Gaouzi - Elisa Frintz)
-
+# Projet Text Mining - Master 2 SISE 
+* Romain Dudoit
+* Fatim-Zahra El Gaouzi
+* Elisa Frintz
 
 ## Contexte et objectifs du projet
 
