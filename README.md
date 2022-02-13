@@ -2,7 +2,8 @@
 ## Romain Dudoit - Fatim-Zahra El Gaouzi - Elisa Frintz
 
 ### Page n°1 : Statistiques descriptives
-![page1](https://user-images.githubusercontent.com/65174929/153760556-7e21ad82-4303-4179-bce3-788225e3770a.png)
+![p1_1](https://user-images.githubusercontent.com/65174929/153760895-979d3d5c-26af-4876-a075-1d3d5f99ac10.png)
+![p1_2](https://user-images.githubusercontent.com/65174929/153760904-f745d7a0-4314-40d3-bcf3-0768b8a9e578.png)
 
 ### Page n°2 : Analyse des offres
 ![page2](https://user-images.githubusercontent.com/65174929/153760845-9a600a08-c2fd-4a7d-a849-c1316c629a97.png)
