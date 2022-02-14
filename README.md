@@ -5,7 +5,7 @@
 
 ## Contexte et objectifs du projet
 
-Dans le cadre de ce projet, nous avons voulu analyser différents métiers autour de la data qui sont très souvent confondus dans l’imaginaire collectif. En effet, le métier de Data scientist a longtemps été le métier de référence dans le domaine de la data. Pourtant, il existe de plus en plus métiers différents qui permettent de mieux spécifier les rôles et besoins de chacun. Parmi ces nombreux noms de métiers, nous avons voulu nous concentrer sur trois d’entre eux : __Data Scientist__, __Data Analyst__ et __Data Engineer__. 
+Dans le cadre de notre cours de __text mining__, nous avons voulu analyser différents métiers autour de la data qui sont très souvent confondus dans l’imaginaire collectif. En effet, le métier de Data scientist a longtemps été le métier de référence dans le domaine de la data. Pourtant, il existe de plus en plus métiers différents qui permettent de mieux spécifier les rôles et besoins de chacun. Parmi ces nombreux noms de métiers, nous avons voulu nous concentrer sur trois d’entre eux : __Data Scientist__, __Data Analyst__ et __Data Engineer__. 
 
 Pour cela, nous avons utilisé l’__API de pôle emploi__ qui regroupe un certain nombre d’offres d’emploi en France. Afin de ne pas perdre les données des offres d’emploi qui pourrait être retirées, nous avons construit une base de données afin de les stocker dans un serveur __MySQL__. Nous pouvons également mettre à jour cette base de données et en ajoutant les nouvelles offres disponibles.
 
